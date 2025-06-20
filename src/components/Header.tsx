@@ -96,12 +96,14 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               )}
             </button>
             
-            <Link 
-              to="/dashboard" 
+            <a 
+              href="https://appagently.netlify.app/" 
+              target="_blank" 
+              rel="noopener noreferrer"
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium"
             >
               Dashboard
-            </Link>
+            </a>
           </nav>
 
           <div className="md:hidden flex items-center space-x-2">
@@ -156,13 +158,15 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               >
                 Docs
               </Link>
-              <Link 
-                to="/dashboard" 
+              <a 
+                href="https://appagently.netlify.app/" 
+                target="_blank" 
+                rel="noopener noreferrer"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg text-center font-medium hover:shadow-lg transition-all duration-300"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dashboard
-              </Link>
+              </a>
             </nav>
           </div>
         )}
