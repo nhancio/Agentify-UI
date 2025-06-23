@@ -320,13 +320,22 @@ export class TavusService {
       throw new Error('Replica ID is required to create a conversation');
     }
 
+    // Patch: Convert ISO code to full language name if needed
+    let patchedConfig = { ...config };
+    if (patchedConfig.properties?.language) {
+      const lang = patchedConfig.properties.language;
+      if (ISO_TO_LANGUAGE[lang]) {
+        patchedConfig.properties.language = ISO_TO_LANGUAGE[lang];
+      }
+    }
+
     const response = await fetch(`${this.baseUrl}/v2/conversations`, {
       method: 'POST',
       headers: {
         'x-api-key': this.apiKey,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config),
+      body: JSON.stringify(patchedConfig),
     });
 
     if (!response.ok) {
@@ -668,4 +677,18 @@ export const replicaUtils = {
       return groups;
     }, {} as Record<string, TavusReplica[]>);
   }
+};
+
+// Add this mapping utility
+export const ISO_TO_LANGUAGE: Record<string, string> = {
+  en: 'English',
+  es: 'Spanish',
+  fr: 'French',
+  de: 'German',
+  it: 'Italian',
+  pt: 'Portuguese',
+  ja: 'Japanese',
+  ko: 'Korean',
+  zh: 'Chinese',
+  // Add more as needed
 };

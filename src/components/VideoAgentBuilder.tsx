@@ -20,7 +20,7 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
-import { tavusService, videoAgentPersonas, replicaUtils, type VideoAgentConfig, type TavusReplica, type TavusPersona } from '../lib/tavus';
+import { tavusService, videoAgentPersonas, replicaUtils, type VideoAgentConfig, type TavusReplica, type TavusPersona, ISO_TO_LANGUAGE } from '../lib/tavus';
 
 interface VideoAgentBuilderProps {
   agentId?: string;
@@ -154,7 +154,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
           max_call_duration: config.conversationConfig.maxDuration,
           enable_recording: config.conversationConfig.enableRecording,
           enable_transcription: config.conversationConfig.enableTranscription,
-          language: config.conversationConfig.language
+          language: ISO_TO_LANGUAGE[config.conversationConfig.language] || config.conversationConfig.language
         }
       });
 

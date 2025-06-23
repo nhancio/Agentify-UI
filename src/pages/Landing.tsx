@@ -12,7 +12,6 @@ import DashboardPreview from '../components/DashboardPreview';
 import AnimatedWaveform from '../components/AnimatedWaveform';
 import VideoAgentShowcase from '../components/VideoAgentShowcase';
 import VideoAgentPreview from '../components/VideoAgentPreview';
-import VideoSupportWidget from '../components/VideoSupportWidget';
 import { 
   Bot, 
   Phone, 
@@ -223,21 +222,21 @@ const Landing: React.FC = () => {
       <FloatingChatBubble />
       
       {/* Video Support Widget */}
-      <VideoSupportWidget
+      {/* <VideoSupportWidget
         isOpen={showVideoSupport}
         onClose={() => setShowVideoSupport(false)}
         agentName="Emma"
         agentRole="Customer Support Specialist"
-      />
+      /> */}
 
       {/* Support Button */}
-      <button
+      {/* <button
         onClick={() => setShowVideoSupport(true)}
         className="fixed bottom-6 left-6 z-40 bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded-full shadow-2xl hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-110"
         title="Get Video Support"
       >
         <MessageSquare className="w-6 h-6" />
-      </button>
+      </button> */}
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">

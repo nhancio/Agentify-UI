@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Video, MessageSquare, Phone, Mail, X, Play, Volume2, VolumeX, Minimize2, AlertCircle } from 'lucide-react';
-import { tavusService } from '../lib/tavus';
+import { tavusService, ISO_TO_LANGUAGE } from '../lib/tavus';
 
 interface VideoSupportWidgetProps {
   isOpen: boolean;
@@ -50,7 +50,7 @@ const VideoSupportWidget: React.FC<VideoSupportWidgetProps> = ({
           max_call_duration: 1800, // 30 minutes
           enable_recording: true,
           enable_transcription: true,
-          language: 'en'
+          language: ISO_TO_LANGUAGE['en'] // Use full language name
         }
       });
 

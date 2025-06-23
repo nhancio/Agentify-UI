@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, X, Bot, Video, Play, Pause, Volume2, VolumeX } from 'lucide-react';
-import { tavusService } from '../lib/tavus';
+import { tavusService, ISO_TO_LANGUAGE } from '../lib/tavus';
 
 const FloatingChatBubble: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -64,7 +64,7 @@ const FloatingChatBubble: React.FC = () => {
           max_call_duration: 1800, // 30 minutes
           enable_recording: true,
           enable_transcription: true,
-          language: 'en'
+          language: ISO_TO_LANGUAGE['en'] // Use full language name
         }
       });
 

@@ -14,7 +14,7 @@ import {
   Camera,
   Settings
 } from 'lucide-react';
-import { tavusService } from '../lib/tavus';
+import { tavusService, ISO_TO_LANGUAGE } from '../lib/tavus';
 import { agentService } from '../lib/api';
 import type { Agent } from '../lib/supabase';
 
@@ -114,7 +114,7 @@ const VideoAgents: React.FC = () => {
           max_call_duration: 1800, // 30 minutes
           enable_recording: true,
           enable_transcription: true,
-          language: agent.language || 'en'
+          language: ISO_TO_LANGUAGE[agent.language || 'en'] || agent.language || 'English'
         }
       });
 

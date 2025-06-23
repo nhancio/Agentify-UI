@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Bot, Menu, X, Moon, Sun } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
   transparent?: boolean;
@@ -10,6 +11,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     // Check for saved theme preference or default to light mode
@@ -107,14 +109,29 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               )}
             </button>
             
-            <a 
-              href="https://appagently.netlify.app/" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            {/* Dashboard button now routes internally */}
+            <Link
+              to="/dashboard"
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium"
             >
               Dashboard
-            </a>
+            </Link>
+            {/* Sign In/Out button */}
+            {user ? (
+              <button
+                onClick={signOut}
+                className="ml-2 bg-white text-blue-600 border border-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-all duration-300"
+              >
+                Sign Out
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="ml-2 bg-white text-blue-600 border border-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-all duration-300"
+              >
+                Sign In
+              </Link>
+            )}
           </nav>
 
           <div className="md:hidden flex items-center space-x-2">
@@ -179,15 +196,34 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               >
                 Docs
               </Link>
-              <a 
-                href="https://appagently.netlify.app/" 
-                target="_blank" 
-                rel="noopener noreferrer"
+              {/* Dashboard button now routes internally */}
+              <Link
+                to="/dashboard"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg text-center font-medium hover:shadow-lg transition-all duration-300"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dashboard
-              </a>
+              </Link>
+              {/* Sign In/Out button */}
+              {user ? (
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    signOut();
+                  }}
+                  className="bg-white text-blue-600 border border-blue-600 px-6 py-3 rounded-lg text-center font-medium hover:bg-blue-50 transition-all duration-300"
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="bg-white text-blue-600 border border-blue-600 px-6 py-3 rounded-lg text-center font-medium hover:bg-blue-50 transition-all duration-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
             </nav>
           </div>
         )}
