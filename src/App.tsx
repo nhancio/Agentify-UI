@@ -80,74 +80,19 @@ function AppRoutes() {
             </PublicRoute>
           } 
         />
-
-        {/* Protected Routes */}
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/builder" 
-          element={
-            <ProtectedRoute>
-              <AgentBuilder />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/voice-agents" 
-          element={
-            <ProtectedRoute>
-              <VoiceAgents />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/video-agents" 
-          element={
-            <ProtectedRoute>
-              <VideoAgents />
-            </ProtectedRoute>
-          } 
-        />
         <Route 
           path="/marketplace" 
-          element={
-            <ProtectedRoute>
-              <Marketplace />
-            </ProtectedRoute>
-          } 
+          element={<Marketplace />} 
         />
-        <Route 
-          path="/analytics" 
-          element={
-            <ProtectedRoute>
-              <Analytics />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/settings" 
-          element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/billing" 
-          element={
-            <ProtectedRoute>
-              <Billing />
-            </ProtectedRoute>
-          } 
-        />
-
-        {/* Admin Routes */}
+        {/* All sidebar-linked routes are now public */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/builder" element={<AgentBuilder />} />
+        <Route path="/voice-agents" element={<VoiceAgents />} />
+        <Route path="/video-agents" element={<VideoAgents />} />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/billing" element={<Billing />} />
+        {/* Admin Route can remain protected if needed */}
         <Route 
           path="/admin" 
           element={
@@ -156,9 +101,8 @@ function AppRoutes() {
             </ProtectedRoute>
           } 
         />
-
         {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/\" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );

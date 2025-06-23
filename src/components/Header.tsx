@@ -71,8 +71,19 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               Marketplace
             </Link>
             <Link 
-              to="/pricing" 
+              to="#"
               className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+              onClick={(e) => {
+                e.preventDefault();
+                if (window.location.pathname === "/" || window.location.pathname === "/landing") {
+                  const section = document.getElementById("pricing-section");
+                  if (section) {
+                    section.scrollIntoView({ behavior: "smooth" });
+                  }
+                } else {
+                  window.location.href = "/#pricing-section";
+                }
+              }}
             >
               Pricing
             </Link>
@@ -145,9 +156,19 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
                 Marketplace
               </Link>
               <Link 
-                to="/pricing" 
+                to="#"
                 className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium py-2"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (window.location.pathname === "/" || window.location.pathname === "/landing") {
+                    const section = document.getElementById("pricing-section");
+                    if (section) {
+                      section.scrollIntoView({ behavior: "smooth" });
+                    }
+                  } else {
+                    window.location.href = "/#pricing-section";
+                  }
+                }}
               >
                 Pricing
               </Link>
