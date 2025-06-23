@@ -21,8 +21,7 @@ const AgentBuilder: React.FC = () => {
   const [agentType, setAgentType] = useState<'voice' | 'video'>('voice');
   const [agentName, setAgentName] = useState('My New Agent');
   const [selectedStep, setSelectedStep] = useState(0);
-
-  const agentSteps = [
+  const [agentSteps, setAgentSteps] = useState([
     {
       id: 'greeting',
       type: 'message',
@@ -60,7 +59,7 @@ const AgentBuilder: React.FC = () => {
       content: 'Thank you for your time. Have a great day!',
       icon: CheckCircle
     }
-  ];
+  ]);
 
   const stepTypes = [
     { id: 'message', label: 'Message', icon: MessageSquare, color: 'blue' },
@@ -292,6 +291,14 @@ const AgentBuilder: React.FC = () => {
                     <textarea
                       rows={4}
                       value={agentSteps[selectedStep]?.content || ''}
+                      onChange={e => {
+                        const updatedSteps = [...agentSteps];
+                        updatedSteps[selectedStep] = {
+                          ...updatedSteps[selectedStep],
+                          content: e.target.value
+                        };
+                        setAgentSteps(updatedSteps);
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Enter the message your agent will say..."
                     />

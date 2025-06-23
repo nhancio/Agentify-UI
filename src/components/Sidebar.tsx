@@ -14,7 +14,6 @@ import {
   Moon,
   Sun
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -29,12 +28,16 @@ const navigation = [
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  profile?: any;
+  loading?: boolean;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
   const location = useLocation();
   const [isDark, setIsDark] = React.useState(
     document.documentElement.classList.contains('dark')
   );
-  const { googleProfile } = useAuth();
 
   const toggleTheme = () => {
     const newTheme = !isDark;
@@ -80,31 +83,29 @@ const Sidebar: React.FC = () => {
         <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 p-4 rounded-lg transition-colors duration-300">
             <div className="flex items-center">
-              {googleProfile?.avatar ? (
+              {loading ? (
+                <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
+              ) : profile?.avatar_url ? (
                 <img
-                  src={googleProfile.avatar}
-                  alt={googleProfile.name}
+                  src={profile.avatar_url}
+                  alt={profile.full_name || 'Avatar'}
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-sm">
-                    {googleProfile?.name
-                      ? googleProfile.name
-                          .split(' ')
-                          .map((n: string) => n[0])
-                          .join('')
-                          .toUpperCase()
+                    {profile?.full_name
+                      ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
                       : 'JD'}
                   </span>
                 </div>
               )}
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  {googleProfile?.name || 'John Doe'}
+                  {profile?.full_name || 'John Doe'}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {googleProfile?.email || 'Premium Plan'}
+                  {profile?.email || 'Premium Plan'}
                 </p>
               </div>
             </div>

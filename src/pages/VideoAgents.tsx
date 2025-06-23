@@ -101,6 +101,7 @@ const VideoAgents: React.FC = () => {
     try {
       // Extract replica ID from agent configuration
       const replicaId = agent.voice_settings?.replicaId || import.meta.env.VITE_TAVUS_REPLICA_ID;
+      const personaId = import.meta.env.VITE_TAVUS_PERSONA_ID;
       
       if (!replicaId) {
         alert('No replica configured for this agent. Please edit the agent and select a replica.');
@@ -109,6 +110,7 @@ const VideoAgents: React.FC = () => {
 
       const conversation = await tavusService.createConversation({
         replica_id: replicaId,
+        persona_id: personaId,
         conversation_name: `Live - ${agent.name}`,
         properties: {
           max_call_duration: 1800, // 30 minutes
@@ -118,13 +120,16 @@ const VideoAgents: React.FC = () => {
         }
       });
 
-      // Open conversation in new window
-      if (conversation.streamUrl) {
-        window.open(conversation.streamUrl, '_blank', 'width=800,height=600');
+      if (!conversation.streamUrl) {
+        alert('Failed to create a video session. Please check your Tavus replica and persona configuration.');
+        return;
       }
-    } catch (error) {
+
+      // Open conversation in new window
+      window.open(conversation.streamUrl, '_blank', 'width=800,height=600');
+    } catch (error: any) {
+      alert('Failed to start conversation: ' + (error?.message || error));
       console.error('Error starting conversation:', error);
-      alert('Failed to start conversation. Please check your Tavus configuration.');
     }
   };
 

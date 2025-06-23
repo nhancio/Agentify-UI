@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import { 
   User, 
@@ -16,9 +16,14 @@ import {
   CheckCircle,
   AlertTriangle
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
+  const { user, signOut } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
@@ -59,15 +64,38 @@ const Settings: React.FC = () => {
     }
   ];
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      if (!error) setProfile(data);
+      setLoading(false);
+    };
+    fetchProfile();
+  }, [user]);
+
   return (
     <div className="flex">
-      <Sidebar />
-      
+      <Sidebar profile={profile} loading={loading} />
       <div className="ml-64 flex-1 p-8 pt-24">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
-          <p className="text-gray-600">Manage your account settings and preferences.</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
+            <p className="text-gray-600">Manage your account settings and preferences.</p>
+          </div>
+          {/* Logout Button */}
+          <button
+            onClick={signOut}
+            className="bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-all font-medium"
+          >
+            Logout
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -100,64 +128,75 @@ const Settings: React.FC = () => {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
-                  
-                  <div className="flex items-center space-x-6 mb-6">
-                    <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-2xl">JD</span>
-                    </div>
-                    <div>
-                      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 mr-2">
-                        Change Avatar
-                      </button>
-                      <button className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50">
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                      <input
-                        type="text"
-                        defaultValue="John"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                      <input
-                        type="text"
-                        defaultValue="Doe"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                      <input
-                        type="email"
-                        defaultValue="john.doe@company.com"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                      <input
-                        type="tel"
-                        defaultValue="+1 (555) 123-4567"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
-                      <input
-                        type="text"
-                        defaultValue="Acme Corporation"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
-
+                  {loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <>
+                      <div className="flex items-center space-x-6 mb-6">
+                        {profile?.avatar_url ? (
+                          <img
+                            src={profile.avatar_url}
+                            alt={profile.full_name || 'Avatar'}
+                            className="w-20 h-20 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                            <span className="text-white font-semibold text-2xl">
+                              {profile?.full_name
+                                ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
+                                : 'JD'}
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 mr-2">
+                            Change Avatar
+                          </button>
+                          <button className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50">
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                          <input
+                            type="text"
+                            value={profile?.full_name || ''}
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                          <input
+                            type="text"
+                            value={profile?.company_name || ''}
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                          <input
+                            type="email"
+                            value={profile?.email || ''}
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                          <input
+                            type="tel"
+                            value={profile?.phone || ''}
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                   <div className="mt-6 flex justify-end">
                     <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg">
                       Save Changes

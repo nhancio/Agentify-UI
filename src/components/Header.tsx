@@ -96,7 +96,6 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               Docs
             </Link>
             
-            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
@@ -109,14 +108,12 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               )}
             </button>
             
-            {/* Dashboard button now routes internally */}
             <Link
               to="/dashboard"
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium"
             >
               Dashboard
             </Link>
-            {/* Sign In/Out button */}
             {user ? (
               <button
                 onClick={signOut}
@@ -135,7 +132,6 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
           </nav>
 
           <div className="md:hidden flex items-center space-x-2">
-            {/* Mobile Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
@@ -196,7 +192,6 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               >
                 Docs
               </Link>
-              {/* Dashboard button now routes internally */}
               <Link
                 to="/dashboard"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg text-center font-medium hover:shadow-lg transition-all duration-300"
@@ -204,7 +199,6 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               >
                 Dashboard
               </Link>
-              {/* Sign In/Out button */}
               {user ? (
                 <button
                   onClick={() => {

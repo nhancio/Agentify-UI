@@ -2,6 +2,22 @@
 
 ## 1. Apply Database Migration
 
+**Important:**  
+If you run the migration SQL in the Supabase SQL Editor, you must run it in the **"Database"** context (not "Auth" or "Storage").  
+If you see no tables created, check for errors in the SQL output.  
+- Make sure you are using the **"Run"** button, not "Save".
+- If you see errors about missing extensions or permissions, you may need to run `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";` as a separate query first.
+
+**Troubleshooting Steps:**
+1. Open **SQL Editor** in Supabase.
+2. Paste only this and run it first:
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+   ```
+3. Then paste the rest of your migration SQL and run it.
+4. Check the **"Tables"** section in the sidebar to confirm tables are created.
+5. If you see errors, check for typos or permission issues in your SQL.
+
 In your Supabase dashboard:
 1. Go to **SQL Editor**
 2. Copy and paste the content from `supabase/migrations/20250608100237_yellow_dust.sql`

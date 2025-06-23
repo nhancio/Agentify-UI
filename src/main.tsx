@@ -15,10 +15,10 @@ import VoiceAgents from './pages/VoiceAgents';
 import AgentBuilder from './pages/AgentBuilder';
 import ProtectedRoute from './ProtectedRoute';
 import './index.css';
+import { CallLogs } from './components/CallLogs';
+import Calls from './pages/Calls';
+import Team from './pages/Team';
 
-// Placeholder components for missing pages
-const Calls = () => <div className="p-8 pt-24">Calls page coming soon.</div>;
-const Team = () => <div className="p-8 pt-24">Team management coming soon.</div>;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
