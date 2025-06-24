@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize2, Users, Clock, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import AnimatedButton from './AnimatedButton';
+import { useAuth } from '../contexts/AuthContext';
 
 interface VideoAgent {
   id: string;
@@ -19,6 +22,7 @@ interface VideoAgent {
 const VideoAgentShowcase: React.FC = () => {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [muted, setMuted] = useState(true);
+  const { user } = useAuth();
 
   // Demo video agents with realistic examples
   const videoAgents: VideoAgent[] = [
@@ -335,9 +339,11 @@ const VideoAgentShowcase: React.FC = () => {
               configure the personality, and deploy instantly.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                Start Free Trial
-              </button>
+              <Link to={user ? "/dashboard" : "/login"}>
+                <AnimatedButton size="lg" showArrow>
+                  Start Free Trial
+                </AnimatedButton>
+              </Link>
               <button
                 className="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors"
                 onClick={() => window.open('https://calendly.com/nithindidigam/platform-demo', '_blank')}

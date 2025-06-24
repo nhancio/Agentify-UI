@@ -68,7 +68,10 @@ const FloatingChatBubble: React.FC = () => {
         }
       });
 
-      setActiveConversation(conversation);
+      setActiveConversation({
+        ...conversation,
+        url: conversation.conversation_url // always use this for iframe
+      });
       setIsVideoMode(true);
       setError('');
     } catch (error) {
@@ -197,7 +200,7 @@ const FloatingChatBubble: React.FC = () => {
           {isVideoMode && activeConversation ? (
             <div className="relative h-80 bg-gray-900">
               <iframe
-                src={`${activeConversation.conversationUrl}&muted=${isMuted ? 1 : 0}`}
+                src={`${activeConversation.url}&muted=${isMuted ? 1 : 0}`}
                 className="w-full h-full"
                 frameBorder="0"
                 allow="autoplay; fullscreen; picture-in-picture; microphone; camera"

@@ -120,13 +120,14 @@ const VideoAgents: React.FC = () => {
         }
       });
 
-      if (!conversation.streamUrl) {
+      // Use the correct property from Tavus response
+      if (!conversation.conversation_url) {
         alert('Failed to create a video session. Please check your Tavus replica and persona configuration.');
         return;
       }
 
       // Open conversation in new window
-      window.open(conversation.streamUrl, '_blank', 'width=800,height=600');
+      window.open(conversation.conversation_url, '_blank', 'width=800,height=600');
     } catch (error: any) {
       alert('Failed to start conversation: ' + (error?.message || error));
       console.error('Error starting conversation:', error);

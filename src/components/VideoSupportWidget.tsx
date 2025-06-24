@@ -54,7 +54,11 @@ const VideoSupportWidget: React.FC<VideoSupportWidgetProps> = ({
         }
       });
 
-      setActiveConversation(conversation);
+      // Use the correct property from Tavus response
+      setActiveConversation({
+        ...conversation,
+        url: conversation.conversation_url // always use this for iframe
+      });
       setError('');
     } catch (error) {
       console.error('Error starting video conversation:', error);
@@ -145,7 +149,7 @@ const VideoSupportWidget: React.FC<VideoSupportWidgetProps> = ({
               /* Video Chat Area */
               <div className="flex-1 relative bg-gray-900">
                 <iframe
-                  src={`${activeConversation.conversationUrl}&muted=${isMuted ? 1 : 0}`}
+                  src={`${activeConversation.url}&muted=${isMuted ? 1 : 0}`}
                   className="w-full h-full"
                   frameBorder="0"
                   allow="autoplay; fullscreen; picture-in-picture; microphone; camera"

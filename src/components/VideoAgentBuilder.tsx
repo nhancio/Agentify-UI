@@ -158,11 +158,14 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
         }
       });
 
-      setActiveConversation(conversation);
+      setActiveConversation({
+        ...conversation,
+        url: conversation.conversation_url // always use this for iframe or window.open
+      });
       
       // Open conversation in new window
-      if (conversation.conversationUrl) {
-        window.open(conversation.conversationUrl, '_blank', 'width=800,height=600');
+      if (conversation.conversation_url) {
+        window.open(conversation.conversation_url, '_blank', 'width=800,height=600');
       }
     } catch (error) {
       console.error('Error starting test conversation:', error);
