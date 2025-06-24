@@ -24,7 +24,7 @@ export const CallLogs: React.FC = () => {
     const fetchCallLogs = async () => {
       setLoading(true);
       const { data, error } = await supabase
-        .from('call_logs')
+        .from('calls') // changed from 'call_logs'
         .select('*')
         .order('created_at', { ascending: false });
       if (error) {
@@ -163,7 +163,7 @@ export const CallLogs: React.FC = () => {
               {loading ? (
                 <tr><td colSpan={6} className="text-center py-8">Loading...</td></tr>
               ) : filteredLogs.map((log) => (
-                <tr key={log.userid} className="hover:bg-gray-50 transition-colors">
+                <tr key={log.id || log.userid} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {new Date(log.created_at).toLocaleString()}
                   </td>

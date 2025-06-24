@@ -41,7 +41,7 @@ const AdminDashboard: React.FC = () => {
       const [usersData, agentsData, callsData] = await Promise.all([
         supabase.from('profiles').select('*'),
         supabase.from('agents').select('*'),
-        supabase.from('calls').select('*')
+        supabase.from('calls').select('*') // change to 'call_logs' if that's your table
       ]);
 
       setStats({
@@ -198,7 +198,7 @@ const AdminDashboard: React.FC = () => {
                           <Users className="h-5 w-5 text-blue-600" />
                         </div>
                         <div className="ml-3">
-                          <div className="font-medium text-gray-900">{user.full_name || 'Unknown'}</div>
+                          <div className="font-medium text-gray-900">{user.full_name || user.name || 'Unknown'}</div>
                           <div className="text-sm text-gray-500">{user.email}</div>
                         </div>
                       </div>

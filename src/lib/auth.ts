@@ -27,7 +27,9 @@ export const authService = {
         .insert({
           id: data.user.id,
           email: data.user.email!,
-          ...userData,
+          full_name: userData.full_name || '',
+          company_name: userData.company_name || '',
+          phone: userData.phone || ''
         });
 
       if (profileError) throw profileError;
