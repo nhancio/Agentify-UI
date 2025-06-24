@@ -30,7 +30,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return {
       name: user_metadata?.full_name || user_metadata?.name || '',
       email: user.email || user_metadata?.email || '',
-      avatar: user_metadata?.avatar_url || ''
+      avatar: user_metadata?.avatar_url || '',
+      plan: user_metadata?.plan || 'Premium Plan'
     };
   };
 

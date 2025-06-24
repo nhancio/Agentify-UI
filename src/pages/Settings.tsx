@@ -21,7 +21,7 @@ import { supabase } from '../lib/supabase';
 
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
-  const { user, signOut } = useAuth();
+  const { user, googleProfile, signOut } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -80,9 +80,9 @@ const Settings: React.FC = () => {
   }, [user]);
 
   return (
-    <div className="flex">
-      <Sidebar profile={profile} loading={loading} />
-      <div className="ml-64 flex-1 p-8 pt-24">
+    <div className="flex flex-col lg:flex-row">
+      <Sidebar />
+      <div className="lg:ml-64 flex-1 p-4 sm:p-8 pt-24">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -126,24 +126,24 @@ const Settings: React.FC = () => {
             {/* Profile Settings */}
             {activeTab === 'profile' && (
               <div className="space-y-6">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-2xl mx-auto">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
                   {loading ? (
                     <div>Loading...</div>
                   ) : (
                     <>
                       <div className="flex items-center space-x-6 mb-6">
-                        {profile?.avatar_url ? (
+                        {googleProfile?.avatar ? (
                           <img
-                            src={profile.avatar_url}
-                            alt={profile.full_name || 'Avatar'}
+                            src={googleProfile.avatar}
+                            alt={googleProfile.name}
                             className="w-20 h-20 rounded-full object-cover"
                           />
                         ) : (
                           <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
                             <span className="text-white font-semibold text-2xl">
-                              {profile?.full_name
-                                ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
+                              {googleProfile?.name
+                                ? googleProfile.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
                                 : 'JD'}
                             </span>
                           </div>
@@ -157,12 +157,12 @@ const Settings: React.FC = () => {
                           </button>
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                           <input
                             type="text"
-                            value={profile?.full_name || ''}
+                            value={googleProfile?.name || ''}
                             readOnly
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
                           />
@@ -180,7 +180,7 @@ const Settings: React.FC = () => {
                           <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                           <input
                             type="email"
-                            value={profile?.email || ''}
+                            value={googleProfile?.email || ''}
                             readOnly
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
                           />

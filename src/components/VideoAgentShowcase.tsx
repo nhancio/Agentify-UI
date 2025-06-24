@@ -338,7 +338,10 @@ const VideoAgentShowcase: React.FC = () => {
               <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
                 Start Free Trial
               </button>
-              <button className="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
+              <button
+                className="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors"
+                onClick={() => window.open('https://calendly.com/nithindidigam/platform-demo', '_blank')}
+              >
                 Schedule Demo
               </button>
             </div>

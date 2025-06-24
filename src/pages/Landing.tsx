@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import TypewriterText from '../components/TypewriterText';
 import AnimatedButton from '../components/AnimatedButton';
@@ -36,6 +37,7 @@ import {
 } from 'lucide-react';
 
 const Landing: React.FC = () => {
+  const { user } = useAuth();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showVideoSupport, setShowVideoSupport] = useState(false);
 
@@ -285,7 +287,7 @@ const Landing: React.FC = () => {
 
           <ScrollReveal direction="up" delay={400}>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <Link to="/signup">
+              <Link to={user ? "/dashboard" : "/login"}>
                 <AnimatedButton size="lg" showArrow>
                   Start Free Trial
                 </AnimatedButton>
@@ -658,6 +660,13 @@ const Landing: React.FC = () => {
                       variant={plan.highlighted ? 'primary' : 'outline'}
                       className="w-full"
                       showArrow
+                      onClick={() => {
+                        if (user) {
+                          window.location.href = '/dashboard';
+                        } else {
+                          window.location.href = '/login';
+                        }
+                      }}
                     >
                       Get Started
                     </AnimatedButton>
@@ -695,7 +704,12 @@ const Landing: React.FC = () => {
                     Start Your Free Trial
                   </AnimatedButton>
                 </Link>
-                <AnimatedButton variant="secondary" size="lg" icon={<Phone className="w-5 h-5" />}>
+                <AnimatedButton
+                  variant="secondary"
+                  size="lg"
+                  icon={<Phone className="w-5 h-5" />}
+                  onClick={() => window.open('https://calendly.com/nithindidigam/platform-demo', '_blank')}
+                >
                   Schedule Demo
                 </AnimatedButton>
               </div>

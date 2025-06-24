@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Bot, Menu, X, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -12,6 +12,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
   const [isDark, setIsDark] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check for saved theme preference or default to light mode
@@ -89,12 +90,6 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             >
               Pricing
             </Link>
-            <Link 
-              to="/docs" 
-              className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
-            >
-              Docs
-            </Link>
             
             <button
               onClick={toggleTheme}
@@ -116,7 +111,10 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             </Link>
             {user ? (
               <button
-                onClick={signOut}
+                onClick={async () => {
+                  await signOut();
+                  navigate('/');
+                }}
                 className="ml-2 bg-white text-blue-600 border border-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-all duration-300"
               >
                 Sign Out
@@ -184,13 +182,6 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
                 }}
               >
                 Pricing
-              </Link>
-              <Link 
-                to="/docs" 
-                className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium py-2"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Docs
               </Link>
               <Link
                 to="/dashboard"
