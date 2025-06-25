@@ -34,6 +34,8 @@ const VideoAgents: React.FC = () => {
   const [conversations, setConversations] = useState<any[]>([]);
   const [convLoading, setConvLoading] = useState(false);
   const [convError, setConvError] = useState<string | null>(null);
+  const [apiStatus, setApiStatus] = useState<number | null>(null);
+  const [apiResponse, setApiResponse] = useState<any>(null);
 
   useEffect(() => {
     checkTavusConnection();
@@ -76,6 +78,8 @@ const VideoAgents: React.FC = () => {
   const fetchTavusConversations = async () => {
     setConvLoading(true);
     setConvError(null);
+    setApiStatus(null);
+    setApiResponse(null);
     try {
       console.debug('[Tavus] 1) calling API');
       const res = await fetch('https://tavusapi.com/v2/conversations', {
@@ -83,13 +87,21 @@ const VideoAgents: React.FC = () => {
           'x-api-key': import.meta.env.VITE_TAVUS_API_KEY,
         },
       });
+      setApiStatus(res.status);
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        data = { error: 'Failed to parse JSON', text: await res.text() };
+      }
+      setApiResponse(data);
       if (!res.ok) {
         throw new Error(`Failed to fetch conversations: ${res.status} ${res.statusText}`);
       }
-      const data = await res.json();
-      console.debug(`[Tavus] 2) API called and fetched ${data.conversations?.length ?? 0} records`);
-      console.debug('[Tavus] 3) printing records', data.conversations);
-      setConversations(data.conversations || []);
+      // Flatten for UI: data.data is the array of conversations
+      console.debug(`[Tavus] 2) API called and fetched ${data.data?.length ?? 0} records`);
+      console.debug('[Tavus] 3) printing records', data.data);
+      setConversations(data.data || []);
     } catch (err: any) {
       setConvError(err.message || 'Failed to fetch conversations');
       setConversations([]);
@@ -222,7 +234,6 @@ const VideoAgents: React.FC = () => {
   return (
     <div className="flex">
       <Sidebar />
-      
       <div className="ml-64 flex-1 p-8 pt-24">
         {/* Header */}
         <div className="mb-8">
@@ -327,8 +338,8 @@ const VideoAgents: React.FC = () => {
         </div>
 
         {/* Agents Grid */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
+        {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">Your Video Agents</h2>
           </div>
           
@@ -368,14 +379,26 @@ const VideoAgents: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
 
-        {/* Tavus Conversations Table */}
+        {/* Tavus Conversations Table */} 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-10">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">Tavus Conversations</h2>
           </div>
           <div className="p-6">
+            {/* Debug info */}
+            <div className="mb-4">
+              {/* <div className="text-xs text-gray-500">
+                <strong>API Status:</strong> {apiStatus !== null ? apiStatus : 'N/A'}
+              </div> */}
+              {/* <div className="text-xs text-gray-500 mt-1">
+                <strong>API Response:</strong>
+                <pre className="bg-gray-100 rounded p-2 text-xs overflow-x-auto max-h-40">
+                  {apiResponse ? JSON.stringify(apiResponse, null, 2) : 'No response'}
+                </pre>
+              </div> */}
+            </div>
             {convLoading && (
               <div className="text-gray-500">Loading conversations...</div>
             )}
@@ -391,9 +414,12 @@ const VideoAgents: React.FC = () => {
                   <thead>
                     <tr className="bg-gray-50">
                       <th className="px-3 py-2 border-b text-left">Conversation ID</th>
+                      <th className="px-3 py-2 border-b text-left">Name</th>
                       <th className="px-3 py-2 border-b text-left">Status</th>
                       <th className="px-3 py-2 border-b text-left">Replica ID</th>
+                      <th className="px-3 py-2 border-b text-left">Persona ID</th>
                       <th className="px-3 py-2 border-b text-left">Created At</th>
+                      <th className="px-3 py-2 border-b text-left">Updated At</th>
                       <th className="px-3 py-2 border-b text-left">URL</th>
                     </tr>
                   </thead>
@@ -401,10 +427,15 @@ const VideoAgents: React.FC = () => {
                     {conversations.map((conv: any) => (
                       <tr key={conv.conversation_id}>
                         <td className="px-3 py-2 border-b">{conv.conversation_id}</td>
+                        <td className="px-3 py-2 border-b">{conv.conversation_name}</td>
                         <td className="px-3 py-2 border-b">{conv.status}</td>
                         <td className="px-3 py-2 border-b">{conv.replica_id}</td>
+                        <td className="px-3 py-2 border-b">{conv.persona_id}</td>
                         <td className="px-3 py-2 border-b">
                           {conv.created_at ? new Date(conv.created_at).toLocaleString() : ''}
+                        </td>
+                        <td className="px-3 py-2 border-b">
+                          {conv.updated_at ? new Date(conv.updated_at).toLocaleString() : ''}
                         </td>
                         <td className="px-3 py-2 border-b">
                           {conv.conversation_url ? (
