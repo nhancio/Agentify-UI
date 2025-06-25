@@ -23,9 +23,9 @@ const FloatingChatBubble: React.FC = () => {
 
   const [currentMessage, setCurrentMessage] = useState(0);
 
-  // Your customer support replica ID
-  const CUSTOMER_SUPPORT_REPLICA_ID = 'rf4703150052';
-  const CUSTOMER_SUPPORT_PERSONA_ID = 'p7f9fc0aa93b';
+  // Pick customer support replica/persona IDs from .env
+  const CUSTOMER_SUPPORT_REPLICA_ID = import.meta.env.VITE_TAVUS_REPLICA_ID || '';
+  const CUSTOMER_SUPPORT_PERSONA_ID = import.meta.env.VITE_TAVUS_PERSONA_ID || '';
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 3000);

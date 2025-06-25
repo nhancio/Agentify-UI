@@ -223,12 +223,12 @@ const VoiceAgents: React.FC = () => {
         </div>
 
         {/* Agents List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">Your Voice Agents</h2>
           </div>
           
-          {agents.length === 0 ? (
+          {/* {agents.length === 0 ? (
             <div className="p-12 text-center">
               <Mic className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No voice agents yet</h3>
@@ -327,14 +327,14 @@ const VoiceAgents: React.FC = () => {
                 ))}
               </div>
             </div>
-          )}
-        </div>
+          )} 
+        </div> */}
 
         {/* ElevenLabs Agents List */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-6">
-          <div className="p-6 border-b border-gray-200">
+          {/* <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">Your ElevenLabs Agents</h2>
-          </div>
+          </div> */}
           
           <div className="p-6 border-t border-gray-100">
             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
