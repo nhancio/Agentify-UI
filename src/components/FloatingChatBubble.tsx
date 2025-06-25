@@ -45,10 +45,78 @@ const FloatingChatBubble: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      // Instead of creating a new conversation, use the provided link and ID
+      // Create a new Tavus conversation using the configured replica/persona
+      if (!CUSTOMER_SUPPORT_REPLICA_ID || !CUSTOMER_SUPPORT_PERSONA_ID) {
+        throw new Error('Tavus replica or persona ID not configured');
+      }
+
+      // Prepare the POST body as per Tavus API
+      const body = {
+        replica_id: CUSTOMER_SUPPORT_REPLICA_ID,
+        persona_id: CUSTOMER_SUPPORT_PERSONA_ID,
+        conversation_name: 'Support Chat',
+        // Optionally add conversational_context, custom_greeting, callback_url, etc.
+        properties: {
+          max_call_duration: 1800,
+          enable_recording: true,
+          enable_closed_captions: true,
+          language: 'english'
+        }
+      };
+
+      // Call Tavus API directly
+      const res = await fetch('https://tavusapi.com/v2/conversations', {
+        method: 'POST',
+        headers: {
+          'x-api-key': import.meta.env.VITE_TAVUS_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      const convObj = await res.json();
+
+      console.debug('[Tavus] createConversation response:', convObj);
+
+      // Handle HTTP errors (like 400) with error message in body
+      if (!res.ok) {
+        // If Tavus returns { message: "..."} or { error: "...}
+        const apiError = convObj?.message || convObj?.error || res.statusText;
+        throw new Error(
+          typeof apiError === 'string'
+            ? apiError
+            : JSON.stringify(apiError) || 'Tavus API error'
+        );
+      }
+
+      // Use the correct fields from the new API output
+      // Defensive: check for conversation_url, join_url, url, and ensure it's a string
+      const conversationUrl =
+        typeof convObj.conversation_url === 'string' && convObj.conversation_url
+          ? convObj.conversation_url
+          : typeof convObj.join_url === 'string' && convObj.join_url
+          ? convObj.join_url
+          : typeof convObj.url === 'string' && convObj.url
+          ? convObj.url
+          : '';
+
+      const conversationId =
+        typeof convObj.conversation_id === 'string' && convObj.conversation_id
+          ? convObj.conversation_id
+          : typeof convObj.id === 'string' && convObj.id
+          ? convObj.id
+          : '';
+
+      if (!conversationUrl) {
+        console.error('No conversation URL returned from Tavus. Full response:', convObj);
+        throw new Error('No conversation URL returned from Tavus. Please check your Tavus dashboard for the conversation and verify if the conversation_url or join_url is present in the API response.');
+      }
+      if (!conversationId) {
+        throw new Error('No conversation ID returned from Tavus');
+      }
+
       setActiveConversation({
-        conversationId: VIDEO_SUPPORT_CONVERSATION_ID,
-        url: VIDEO_SUPPORT_URL
+        conversationId,
+        url: conversationUrl
       });
       setIsVideoMode(true);
       setError('');
@@ -56,8 +124,10 @@ const FloatingChatBubble: React.FC = () => {
       console.error('Error starting video support:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setError(errorMessage);
-      
-      // Show user-friendly error message
+
+      // if (errorMessage.includes('maximum concurrent')) {
+      //   alert('You have reached the maximum number of concurrent video support sessions. Please end an existing session or try again later.');
+      // } else 
       if (errorMessage.includes('API key')) {
         alert('Video support is not configured yet. Please contact support via email or try text chat.');
       } else if (errorMessage.includes('replica')) {
