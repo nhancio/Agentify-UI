@@ -31,10 +31,14 @@ const VideoAgents: React.FC = () => {
     totalConversations: 0,
     avgDuration: '0:00'
   });
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [convLoading, setConvLoading] = useState(false);
+  const [convError, setConvError] = useState<string | null>(null);
 
   useEffect(() => {
     checkTavusConnection();
     loadAgents();
+    fetchTavusConversations();
   }, []);
 
   const checkTavusConnection = async () => {
@@ -65,6 +69,32 @@ const VideoAgents: React.FC = () => {
       console.error('Error loading video agents:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch Tavus conversations
+  const fetchTavusConversations = async () => {
+    setConvLoading(true);
+    setConvError(null);
+    try {
+      console.debug('[Tavus] 1) calling API');
+      const res = await fetch('https://tavusapi.com/v2/conversations', {
+        headers: {
+          'x-api-key': import.meta.env.VITE_TAVUS_API_KEY,
+        },
+      });
+      if (!res.ok) {
+        throw new Error(`Failed to fetch conversations: ${res.status} ${res.statusText}`);
+      }
+      const data = await res.json();
+      console.debug(`[Tavus] 2) API called and fetched ${data.conversations?.length ?? 0} records`);
+      console.debug('[Tavus] 3) printing records', data.conversations);
+      setConversations(data.conversations || []);
+    } catch (err: any) {
+      setConvError(err.message || 'Failed to fetch conversations');
+      setConversations([]);
+    } finally {
+      setConvLoading(false);
     }
   };
 
@@ -338,6 +368,65 @@ const VideoAgents: React.FC = () => {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Tavus Conversations Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-10">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Tavus Conversations</h2>
+          </div>
+          <div className="p-6">
+            {convLoading && (
+              <div className="text-gray-500">Loading conversations...</div>
+            )}
+            {convError && (
+              <div className="text-red-600">{convError}</div>
+            )}
+            {!convLoading && !convError && conversations.length === 0 && (
+              <div className="text-gray-500">No conversations found.</div>
+            )}
+            {!convLoading && !convError && conversations.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm border">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-3 py-2 border-b text-left">Conversation ID</th>
+                      <th className="px-3 py-2 border-b text-left">Status</th>
+                      <th className="px-3 py-2 border-b text-left">Replica ID</th>
+                      <th className="px-3 py-2 border-b text-left">Created At</th>
+                      <th className="px-3 py-2 border-b text-left">URL</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {conversations.map((conv: any) => (
+                      <tr key={conv.conversation_id}>
+                        <td className="px-3 py-2 border-b">{conv.conversation_id}</td>
+                        <td className="px-3 py-2 border-b">{conv.status}</td>
+                        <td className="px-3 py-2 border-b">{conv.replica_id}</td>
+                        <td className="px-3 py-2 border-b">
+                          {conv.created_at ? new Date(conv.created_at).toLocaleString() : ''}
+                        </td>
+                        <td className="px-3 py-2 border-b">
+                          {conv.conversation_url ? (
+                            <a
+                              href={conv.conversation_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline"
+                            >
+                              Open
+                            </a>
+                          ) : (
+                            '-'
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Quick Actions */}

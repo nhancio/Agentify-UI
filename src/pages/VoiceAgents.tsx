@@ -19,6 +19,7 @@ import {
 import { agentService } from '../lib/api';
 import { voiceAgentService } from '../lib/voiceAgent';
 import type { Agent } from '../lib/supabase';
+import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
 
 const VoiceAgents: React.FC = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -31,9 +32,13 @@ const VoiceAgents: React.FC = () => {
     totalCalls: 0,
     avgDuration: '0:00'
   });
+  const [elAgents, setElAgents] = useState<any[]>([]);
+  const [elAgentDetail, setElAgentDetail] = useState<any | null>(null);
+  const [elLoading, setElLoading] = useState(false);
 
   useEffect(() => {
     loadAgents();
+    fetchElevenLabsAgents();
   }, []);
 
   const loadAgents = async () => {
@@ -53,6 +58,19 @@ const VoiceAgents: React.FC = () => {
       console.error('Error loading agents:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchElevenLabsAgents = async () => {
+    setElLoading(true);
+    try {
+      const client = new ElevenLabsClient({ apiKey: import.meta.env.VITE_ELEVENLABS_API_KEY });
+      const res = await client.conversationalAi.agents.list();
+      setElAgents(res.agents || []);
+    } catch (err) {
+      setElAgents([]);
+    } finally {
+      setElLoading(false);
     }
   };
 
@@ -131,7 +149,6 @@ const VoiceAgents: React.FC = () => {
   return (
     <div className="flex">
       <Sidebar />
-      
       <div className="ml-64 flex-1 p-8 pt-24">
         {/* Header */}
         <div className="mb-8">
@@ -311,6 +328,70 @@ const VoiceAgents: React.FC = () => {
               </div>
             </div>
           )}
+        </div>
+
+        {/* ElevenLabs Agents List */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-6">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Your ElevenLabs Agents</h2>
+          </div>
+          
+          <div className="p-6 border-t border-gray-100">
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <span>ElevenLabs Agents</span>
+              {elLoading && <span className="text-xs text-gray-400">(Loading...)</span>}
+            </h3>
+            {elAgents.length === 0 && !elLoading && (
+              <div className="text-gray-500 text-sm">No ElevenLabs agents found.</div>
+            )}
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm border">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="px-3 py-2 border-b text-left">Name</th>
+                    <th className="px-3 py-2 border-b text-left">Agent ID</th>
+                    <th className="px-3 py-2 border-b text-left">Creator</th>
+                    <th className="px-3 py-2 border-b text-left">Created At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {elAgents.map(agent => (
+                    <tr
+                      key={agent.agent_id}
+                      className="hover:bg-blue-50 cursor-pointer"
+                      onClick={() => setElAgentDetail(agent)}
+                    >
+                      <td className="px-3 py-2 border-b">{agent.name}</td>
+                      <td className="px-3 py-2 border-b">{agent.agent_id}</td>
+                      <td className="px-3 py-2 border-b">{agent.access_info?.creator_name}</td>
+                      <td className="px-3 py-2 border-b">
+                        {agent.created_at_unix_secs
+                          ? new Date(agent.created_at_unix_secs * 1000).toLocaleString()
+                          : ''}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Agent Detail Modal */}
+            {elAgentDetail && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+                <div className="bg-white rounded-xl shadow-lg max-w-lg w-full p-6 relative">
+                  <button
+                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+                    onClick={() => setElAgentDetail(null)}
+                  >
+                    ×
+                  </button>
+                  <h4 className="text-xl font-bold mb-4">ElevenLabs Agent Details</h4>
+                  <pre className="bg-gray-100 rounded p-4 text-xs overflow-x-auto">
+                    {JSON.stringify(elAgentDetail, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Quick Actions */}

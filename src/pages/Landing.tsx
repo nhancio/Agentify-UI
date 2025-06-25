@@ -289,7 +289,7 @@ const Landing: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
               <Link to={user ? "/dashboard" : "/login"}>
                 <AnimatedButton size="lg" showArrow>
-                  Start Free Trial
+                  Start Now
                 </AnimatedButton>
               </Link>
               <AnimatedButton variant="outline" size="lg" icon={<Play className="w-5 h-5" />}>

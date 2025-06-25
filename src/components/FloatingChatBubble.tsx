@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { MessageSquare, X, Bot, Video, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { tavusService, ISO_TO_LANGUAGE } from '../lib/tavus';
 
+const VIDEO_SUPPORT_URL = 'https://tavus.daily.co/ca046e42141364c2';
+const VIDEO_SUPPORT_CONVERSATION_ID = 'ca046e42141364c2';
+
 const FloatingChatBubble: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -41,36 +44,11 @@ const FloatingChatBubble: React.FC = () => {
   const startVideoSupport = async () => {
     setLoading(true);
     setError('');
-    
     try {
-      // First check if Tavus API key is configured
-      const apiKey = import.meta.env.VITE_TAVUS_API_KEY;
-      if (!apiKey) {
-        throw new Error('Tavus API key not configured. Please add VITE_TAVUS_API_KEY to your environment variables.');
-      }
-
-      // Test connection first
-      const connectionTest = await tavusService.testConnection();
-      if (!connectionTest.success) {
-        throw new Error(`Tavus connection failed: ${connectionTest.message}`);
-      }
-
-      // Create conversation
-      const conversation = await tavusService.createConversation({
-        replica_id: CUSTOMER_SUPPORT_REPLICA_ID,
-        persona_id: CUSTOMER_SUPPORT_PERSONA_ID,
-        conversation_name: 'Customer Support Chat',
-        properties: {
-          max_call_duration: 1800, // 30 minutes
-          enable_recording: true,
-          enable_transcription: true,
-          language: ISO_TO_LANGUAGE['en'] // Use full language name
-        }
-      });
-
+      // Instead of creating a new conversation, use the provided link and ID
       setActiveConversation({
-        ...conversation,
-        url: conversation.conversation_url // always use this for iframe
+        conversationId: VIDEO_SUPPORT_CONVERSATION_ID,
+        url: VIDEO_SUPPORT_URL
       });
       setIsVideoMode(true);
       setError('');
@@ -93,13 +71,6 @@ const FloatingChatBubble: React.FC = () => {
   };
 
   const endVideoSupport = async () => {
-    if (activeConversation) {
-      try {
-        await tavusService.endConversation(activeConversation.conversationId);
-      } catch (error) {
-        console.error('Error ending conversation:', error);
-      }
-    }
     setActiveConversation(null);
     setIsVideoMode(false);
     setError('');
