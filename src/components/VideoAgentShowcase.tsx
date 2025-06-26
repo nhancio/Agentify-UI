@@ -19,7 +19,11 @@ interface VideoAgent {
   features: string[];
 }
 
-const VideoAgentShowcase: React.FC = () => {
+interface VideoAgentShowcaseProps {
+  onTryNow?: () => void;
+}
+
+const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [muted, setMuted] = useState(true);
   const { user } = useAuth();
@@ -276,7 +280,10 @@ const VideoAgentShowcase: React.FC = () => {
                     <Play className="w-4 h-4 mr-2" />
                     {activeVideo === agent.id ? 'Watching' : 'Watch Demo'}
                   </button>
-                  <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <button
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    onClick={onTryNow}
+                  >
                     Try Now
                   </button>
                 </div>

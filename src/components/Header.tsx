@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bot, Menu, X, Moon, Sun } from 'lucide-react';
+import { Bot, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
@@ -9,21 +9,9 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check for saved theme preference or default to light mode
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,20 +22,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
-
-  const headerClasses = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+  const headerClasses = `fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
     transparent && !isScrolled
       ? 'bg-transparent'
       : 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-200/20 dark:border-gray-700/20'
@@ -55,8 +30,9 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
 
   return (
     <header className={headerClasses}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="flex justify-between items-center h-16 w-full">
+          {/* Logo left-aligned */}
           <Link to="/" className="flex items-center space-x-2 group">
             <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg group-hover:scale-110 transition-transform duration-300">
               <Bot className="h-6 w-6 text-white" />
@@ -66,7 +42,8 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* Navigation right-aligned */}
+          <nav className="hidden md:flex items-center space-x-8 ml-auto">
             <Link 
               to="/marketplace" 
               className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
@@ -76,13 +53,11 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             <Link 
               to="#"
               className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
-              onClick={(e) => {
+              onClick={e => {
                 e.preventDefault();
                 if (window.location.pathname === "/" || window.location.pathname === "/landing") {
                   const section = document.getElementById("pricing-section");
-                  if (section) {
-                    section.scrollIntoView({ behavior: "smooth" });
-                  }
+                  if (section) section.scrollIntoView({ behavior: "smooth" });
                 } else {
                   window.location.href = "/#pricing-section";
                 }
@@ -90,19 +65,6 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             >
               Pricing
             </Link>
-            
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
-              aria-label="Toggle theme"
-            >
-              {isDark ? (
-                <Sun className="h-5 w-5 text-yellow-500" />
-              ) : (
-                <Moon className="h-5 w-5 text-gray-600" />
-              )}
-            </button>
-            
             <Link
               to="/dashboard"
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium"
@@ -131,18 +93,6 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
 
           <div className="md:hidden flex items-center space-x-2">
             <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
-              aria-label="Toggle theme"
-            >
-              {isDark ? (
-                <Sun className="h-5 w-5 text-yellow-500" />
-              ) : (
-                <Moon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-              )}
-            </button>
-            
-            <button
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -157,7 +107,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 bg-white dark:bg-gray-900 shadow-lg rounded-b-lg border-t border-gray-200 dark:border-gray-700 animate-in slide-in-from-top duration-300">
+          <div className="md:hidden absolute top-16 left-0 right-0 w-full bg-white dark:bg-gray-900 shadow-lg rounded-b-lg border-t border-gray-200 dark:border-gray-700 animate-in slide-in-from-top duration-300">
             <nav className="flex flex-col p-4 space-y-4">
               <Link 
                 to="/marketplace" 
@@ -169,16 +119,15 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               <Link 
                 to="#"
                 className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium py-2"
-                onClick={(e) => {
+                onClick={e => {
                   e.preventDefault();
                   if (window.location.pathname === "/" || window.location.pathname === "/landing") {
                     const section = document.getElementById("pricing-section");
-                    if (section) {
-                      section.scrollIntoView({ behavior: "smooth" });
-                    }
+                    if (section) section.scrollIntoView({ behavior: "smooth" });
                   } else {
                     window.location.href = "/#pricing-section";
                   }
+                  setIsMenuOpen(false);
                 }}
               >
                 Pricing
@@ -192,9 +141,10 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               </Link>
               {user ? (
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setIsMenuOpen(false);
-                    signOut();
+                    await signOut();
+                    navigate('/');
                   }}
                   className="bg-white text-blue-600 border border-blue-600 px-6 py-3 rounded-lg text-center font-medium hover:bg-blue-50 transition-all duration-300"
                 >

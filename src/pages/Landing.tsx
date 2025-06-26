@@ -35,6 +35,7 @@ import {
   Monitor,
   MessageSquare
 } from 'lucide-react';
+import { billingService } from '../lib/api';
 
 const Landing: React.FC = () => {
   const { user } = useAuth();
@@ -171,7 +172,7 @@ const Landing: React.FC = () => {
   const pricingPlans = [
     {
       name: 'Starter',
-      price: '$29',
+      price: '$20',
       period: '/month',
       description: 'Perfect for small businesses getting started',
       features: [
@@ -186,7 +187,7 @@ const Landing: React.FC = () => {
     },
     {
       name: 'Professional',
-      price: '$99',
+      price: '$100',
       period: '/month',
       description: 'For growing businesses with advanced needs',
       features: [
@@ -201,9 +202,9 @@ const Landing: React.FC = () => {
       badge: 'Most Popular'
     },
     {
-      name: 'Enterprise',
-      price: '$299',
-      period: '/month',
+      name: 'Custom',
+      price: 'Custom',
+      period: '',
       description: 'For large organizations with custom requirements',
       features: [
         'Unlimited agents',
@@ -217,6 +218,26 @@ const Landing: React.FC = () => {
       badge: 'Best Value'
     }
   ];
+
+  const handleGetStarted = async (plan: string) => {
+    try {
+      // You may want to map plan names to Stripe price IDs
+      const priceIdMap: Record<string, string> = {
+        Starter: 'price_starter', // replace with your Stripe price IDs
+        Professional: 'price_professional',
+        Custom: 'price_custom'
+      };
+      const priceId = priceIdMap[plan] || priceIdMap['Starter'];
+      const session = await billingService.createCheckoutSession(priceId);
+      if (session?.url) {
+        window.location.href = session.url;
+      } else {
+        alert('Unable to start checkout. Please contact support.');
+      }
+    } catch (err) {
+      alert('Unable to start checkout. Please contact support.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
@@ -284,35 +305,6 @@ const Landing: React.FC = () => {
               </div>
             </div>
           </ScrollReveal>
-
-          <ScrollReveal direction="up" delay={400}>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <Link to={user ? "/dashboard" : "/login"}>
-                <AnimatedButton size="lg" showArrow>
-                  Start Now
-                </AnimatedButton>
-              </Link>
-              <AnimatedButton variant="outline" size="lg" icon={<Play className="w-5 h-5" />}>
-                Watch Demo
-              </AnimatedButton>
-            </div>
-          </ScrollReveal>
-          
-          <ScrollReveal direction="up" delay={600}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              {[
-                { icon: Users, value: '10K+', label: 'Active Agents', color: 'yellow' },
-                { icon: Phone, value: '1M+', label: 'Calls Handled', color: 'green' },
-                { icon: Clock, value: '24/7', label: 'Always Available', color: 'blue' }
-              ].map((stat, index) => (
-                <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all duration-300 group">
-                  <stat.icon className={`h-8 w-8 text-${stat.color}-400 mx-auto mb-4 group-hover:scale-110 transition-transform`} />
-                  <div className="text-3xl font-bold text-white">{stat.value}</div>
-                  <div className="text-blue-200">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
         </div>
       </section>
 
@@ -320,7 +312,7 @@ const Landing: React.FC = () => {
       <LogoSlider />
 
       {/* Video Agents Preview Section */}
-      <section className="py-24 bg-white dark:bg-gray-900">
+      {/* <section className="py-24 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal direction="up">
             <div className="text-center mb-16">
@@ -390,10 +382,10 @@ const Landing: React.FC = () => {
             </div>
           </ScrollReveal>
         </div>
-      </section>
+      </section> */}
 
       {/* Full Video Agents Showcase */}
-      <VideoAgentShowcase />
+      <VideoAgentShowcase onTryNow={() => window.location.href = '/video-agents'} />
 
       {/* Features Section */}
       <section className="py-24 bg-gray-50 dark:bg-gray-800/50">
@@ -514,9 +506,6 @@ const Landing: React.FC = () => {
                     <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
                       {useCase.description}
                     </p>
-                    <button className="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 flex items-center group-hover:translate-x-2 transition-transform">
-                      Learn More <ArrowRight className="ml-1 h-4 w-4" />
-                    </button>
                   </div>
                 </div>
               </ScrollReveal>
@@ -655,21 +644,12 @@ const Landing: React.FC = () => {
                         </li>
                       ))}
                     </ul>
-                    
-                    <AnimatedButton
-                      variant={plan.highlighted ? 'primary' : 'outline'}
-                      className="w-full"
-                      showArrow
-                      onClick={() => {
-                        if (user) {
-                          window.location.href = '/dashboard';
-                        } else {
-                          window.location.href = '/login';
-                        }
-                      }}
+                    <button
+                      className={`w-full ${plan.highlighted ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'border border-white text-white'} px-6 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors`}
+                      onClick={() => handleGetStarted(plan.name)}
                     >
                       Get Started
-                    </AnimatedButton>
+                    </button>
                   </div>
                 </div>
               </ScrollReveal>

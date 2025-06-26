@@ -60,7 +60,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 function AppRoutes() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen w-full bg-gray-50">
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Landing />} />
@@ -112,7 +112,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppRoutes />
+        <div className="min-h-screen w-full">
+          <AppRoutes />
+        </div>
       </AuthProvider>
     </Router>
   );
