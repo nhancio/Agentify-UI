@@ -221,13 +221,8 @@ const Landing: React.FC = () => {
 
   const handleGetStarted = async (plan: string) => {
     try {
-      // You may want to map plan names to Stripe price IDs
-      const priceIdMap: Record<string, string> = {
-        Starter: 'price_starter', // replace with your Stripe price IDs
-        Professional: 'price_professional',
-        Custom: 'price_custom'
-      };
-      const priceId = priceIdMap[plan] || priceIdMap['Starter'];
+      // Use your real Stripe price ID for all plans (or map as needed)
+      const priceId = 'price_1Redc3SIdRlp7sMxv5SEWvjy';
       const session = await billingService.createCheckoutSession(priceId);
       if (session?.url) {
         window.location.href = session.url;

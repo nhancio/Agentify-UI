@@ -276,13 +276,14 @@ export const billingService = {
 
   // Create checkout session (would integrate with Stripe)
   async createCheckoutSession(priceId: string) {
-    // This would call a Supabase Edge Function that creates a Stripe checkout session
-    const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-      body: { priceId }
+    // Call Supabase Edge Function endpoint
+    const response = await fetch('/functions/v1/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId })
     });
-
-    if (error) throw error;
-    return data;
+    if (!response.ok) throw new Error('Failed to create checkout session');
+    return await response.json();
   }
 };
 

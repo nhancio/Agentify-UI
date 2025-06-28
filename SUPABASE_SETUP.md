@@ -77,6 +77,27 @@ VITE_STRIPE_SECRET_KEY=your_stripe_secret
 VITE_DID_API_KEY=your_did_key
 ```
 
+## 6. Set Stripe Environment Variables for Edge Functions
+
+To enable Stripe checkout, set these environment variables in your Supabase project:
+
+1. Go to your Supabase dashboard → **Settings** → **Project Settings** → **Environment Variables**.
+2. Add the following variables:
+
+   ```
+   STRIPE_SECRET_KEY=sk_test_...         # Your Stripe secret key
+   CHECKOUT_SUCCESS_URL=http://localhost:5173/success   # For local development
+   CHECKOUT_CANCEL_URL=http://localhost:5173/cancel     # For local development
+   ```
+
+   - For production, replace `localhost:5173` with your deployed frontend URL, e.g. `https://yourdomain.com/success`.
+
+3. Save and **restart your Edge Functions** if needed.
+
+**Note:**  
+- `yourdomain.com` refers to your deployed frontend domain.  
+- For local testing, use your local dev server URL as shown above.
+
 ## Current Priority: Steps 1 & 2
 
 Focus on completing the database migration and authentication setup first. The app should then be fully functional for creating and managing voice agents (without actual calling functionality until Twilio is configured).
