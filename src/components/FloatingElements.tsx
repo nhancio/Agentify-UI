@@ -12,14 +12,14 @@ const FloatingElements: React.FC = () => {
   ];
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
       {elements.map(({ Icon, delay, duration }, index) => (
         <div
           key={index}
           className="absolute opacity-10 dark:opacity-5"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
+            left: `calc(${Math.random() * 90}% )`, // limit to 90% to avoid overflow
+            top: `calc(${Math.random() * 90}% )`,
             animationDelay: `${delay}s`,
             animationDuration: `${duration}s`
           }}

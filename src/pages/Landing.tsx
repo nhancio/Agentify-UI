@@ -235,7 +235,7 @@ const Landing: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen w-full bg-white dark:bg-gray-900 transition-colors duration-300 overflow-x-hidden">
       <Header transparent />
       <FloatingChatBubble />
       
@@ -257,17 +257,19 @@ const Landing: React.FC = () => {
       </button> */}
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden w-full">
         {/* Animated background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
-          <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 overflow-hidden">
+          <div className="absolute inset-0 bg-black/20 w-full h-full" />
           
           {/* Mouse-following gradient */}
           <div 
-            className="absolute w-96 h-96 bg-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-full blur-3xl transition-all duration-300 ease-out"
+            className="absolute w-96 h-96 bg-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-full blur-3xl transition-all duration-300 ease-out pointer-events-none"
             style={{
-              left: mousePosition.x - 192,
-              top: mousePosition.y - 192,
+              left: Math.max(0, mousePosition.x - 192),
+              top: Math.max(0, mousePosition.y - 192),
+              maxWidth: '100vw',
+              maxHeight: '100vw'
             }}
           />
           
@@ -275,7 +277,7 @@ const Landing: React.FC = () => {
           <FloatingElements />
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <ScrollReveal direction="up" delay={200}>
             <div className="mb-8">
               <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white mb-6">
@@ -383,8 +385,8 @@ const Landing: React.FC = () => {
       <VideoAgentShowcase onTryNow={() => window.location.href = '/video-agents'} />
 
       {/* Features Section */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 bg-gray-50 dark:bg-gray-800/50 w-full">
+        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal direction="up">
             <div className="text-center mb-16">
               <div className="inline-flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-600 dark:text-blue-400 mb-6">
@@ -583,7 +585,7 @@ const Landing: React.FC = () => {
           <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal direction="up">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -698,8 +700,8 @@ const Landing: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 dark:bg-black text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="bg-gray-900 dark:bg-black text-white py-16 w-full">
+        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">

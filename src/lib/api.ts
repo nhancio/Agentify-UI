@@ -274,12 +274,23 @@ export const billingService = {
     return data;
   },
 
-  // Create checkout session (would integrate with Stripe)
+  // Create checkout session (Stripe via Supabase Edge Function)
   async createCheckoutSession(priceId: string) {
-    // Call Supabase Edge Function endpoint
-    const response = await fetch('/functions/v1/create-checkout-session', {
+    const { data: { session } } = await supabase.auth.getSession();
+    const jwt = session?.access_token;
+    // For UI debug: window.jwtDebug = jwt;
+    // For terminal: not possible from browser JS
+    console.debug("Stripe checkout session JWT:", jwt); // Browser console
+    const url =
+      window.location.hostname === "localhost"
+        ? "https://ogxtbtfplncfzjrnhzmg.functions.supabase.co/create-checkout-session"
+        : "/functions/v1/create-checkout-session";
+    const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(jwt ? { Authorization: `Bearer ${jwt}` } : {})
+      },
       body: JSON.stringify({ priceId })
     });
     if (!response.ok) throw new Error('Failed to create checkout session');

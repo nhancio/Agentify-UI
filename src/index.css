@@ -221,3 +221,10 @@ html {
     line-height: 1;
   }
 }
+
+/* Prevent horizontal overflow on mobile */
+html, body, #root {
+  width: 100vw;
+  max-width: 100vw;
+  overflow-x: hidden;
+}

@@ -1,117 +1,152 @@
-/*
-  # Transcription Handler
-  
-  Processes call transcriptions and extracts lead information using AI.
-*/
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+}
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!
+const SUPABASE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+
+interface TwilioWebhookPayload {
+  CallSid: string
+  From: string
+  To: string
+  CallStatus: string
+  Direction: string
+  RecordingUrl?: string
+  TranscriptionText?: string
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders })
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    const bodyText = await req.text()
+    const params = new URLSearchParams(bodyText)
 
-    const formData = await req.formData()
-    const callSid = formData.get('CallSid') as string
-    const transcriptionText = formData.get('TranscriptionText') as string
-
-    // Update call with transcription
-    const { data: call } = await supabase
-      .from('calls')
-      .update({ transcript: transcriptionText })
-      .eq('call_sid', callSid)
-      .select('*, agents(user_id)')
-      .single()
-
-    if (!call) {
-      return new Response('Call not found', { status: 404 })
+    const payload: TwilioWebhookPayload = {
+      CallSid: params.get("CallSid")!,
+      From: params.get("From")!,
+      To: params.get("To")!,
+      CallStatus: params.get("CallStatus")!,
+      Direction: params.get("Direction")!,
+      RecordingUrl: params.get("RecordingUrl") ?? undefined,
+      TranscriptionText: params.get("TranscriptionText") ?? undefined,
     }
 
-    // Use OpenAI to extract lead information from transcript
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: `Extract lead information from this call transcript. Return JSON with:
-            {
-              "name": "caller name if mentioned",
-              "email": "email if provided", 
-              "phone": "phone if provided",
-              "company": "company if mentioned",
-              "interest_level": 1-10,
-              "summary": "brief summary of the call",
-              "sentiment": "positive/neutral/negative"
-            }`
-          },
-          {
-            role: 'user',
-            content: transcriptionText
-          }
-        ],
-        temperature: 0.3
-      })
-    })
-
-    const aiResult = await openAIResponse.json()
-    const leadData = JSON.parse(aiResult.choices[0].message.content)
-
-    // Create lead record if we extracted useful information
-    if (leadData.name || leadData.email || leadData.phone) {
-      await supabase
-        .from('leads')
-        .insert({
-          call_id: call.id,
-          agent_id: call.agent_id,
-          user_id: call.agents.user_id,
-          name: leadData.name,
-          email: leadData.email,
-          phone: leadData.phone,
-          company: leadData.company,
-          interest_level: leadData.interest_level,
-          notes: leadData.summary
-        })
-    }
-
-    // Update call with AI summary and sentiment
-    await supabase
-      .from('calls')
-      .update({
-        summary: leadData.summary,
-        sentiment_score: leadData.sentiment === 'positive' ? 0.8 : 
-                        leadData.sentiment === 'negative' ? 0.2 : 0.5
-      })
-      .eq('id', call.id)
-
-    return new Response('OK', { headers: corsHeaders })
-
-  } catch (error) {
-    console.error('Transcription processing error:', error)
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    // Get agent info by phone number
+    const profileRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/profiles?twilio_phone_number=eq.${payload.To}&select=id,agents(*)&limit=1`,
+      {
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+        },
       }
     )
+    const profileData = await profileRes.json()
+    const profile = profileData[0]
+
+    if (!profile || !profile.agents?.length) {
+      return new Response("No agent found for this number", { status: 404 })
+    }
+
+    const agent = profile.agents[0]
+
+    const now = new Date().toISOString()
+
+    switch (payload.CallStatus) {
+      case "ringing":
+      case "in-progress": {
+        // Create or update the call record
+        await fetch(`${SUPABASE_URL}/rest/v1/calls`, {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates",
+          },
+          body: JSON.stringify({
+            call_sid: payload.CallSid,
+            agent_id: agent.id,
+            from_number: payload.From,
+            to_number: payload.To,
+            status: payload.CallStatus === "ringing" ? "initiated" : "in_progress",
+            started_at: now,
+          }),
+        })
+
+        // Respond with TwiML
+        const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice">${agent.greeting_message || "Hello! Thank you for calling. How can I help you today?"}</Say>
+  <Record 
+    action="/functions/v1/handle-recording" 
+    method="POST" 
+    maxLength="300" 
+    transcribe="true"
+    transcribeCallback="/functions/v1/handle-transcription"
+  />
+</Response>`
+
+        return new Response(twimlResponse, {
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/xml",
+          },
+        })
+      }
+
+      case "completed": {
+        await fetch(`${SUPABASE_URL}/rest/v1/calls?call_sid=eq.${payload.CallSid}`, {
+          method: "PATCH",
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: "completed",
+            ended_at: now,
+            ...(payload.RecordingUrl ? { recording_url: payload.RecordingUrl } : {}),
+          }),
+        })
+        break
+      }
+
+      case "failed":
+      case "busy":
+      case "no-answer": {
+        await fetch(`${SUPABASE_URL}/rest/v1/calls?call_sid=eq.${payload.CallSid}`, {
+          method: "PATCH",
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: "failed",
+            ended_at: now,
+          }),
+        })
+        break
+      }
+    }
+
+    return new Response("OK", { headers: corsHeaders })
+  } catch (err) {
+    console.error("Webhook error:", err)
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+      },
+    })
   }
 })
