@@ -1,4 +1,4 @@
-import React from 'react';
+// (Delete this file)
 import Sidebar from '../components/Sidebar';
 import { Users, BarChart3, User, Mail, PieChart } from 'lucide-react';
 

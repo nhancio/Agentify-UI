@@ -24,7 +24,6 @@ const navigation = [
   { name: 'Marketplace', href: '/marketplace', icon: Store },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Call History', href: '/calls', icon: Phone },
-  { name: 'Team', href: '/team', icon: Users },
   { name: 'Billing', href: '/billing', icon: CreditCard },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
