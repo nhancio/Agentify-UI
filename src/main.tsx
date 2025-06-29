@@ -18,7 +18,6 @@ import './index.css';
 import { CallLogs } from './components/CallLogs';
 import Calls from './pages/Calls';
 import Team from './pages/Team';
-import Onboarding from './pages/Onboarding';
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -75,22 +74,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Team />
             </ProtectedRoute>
           } />
-          <Route path="/onboarding" element={
-            <OnboardingGuard>
-              <Onboarding />
-            </OnboardingGuard>
-          } />
           {/* Add Profile route if you have one */}
         </Routes>
       </BrowserRouter>
     </AuthProvider>
   </React.StrictMode>
 );
-
-function OnboardingGuard({ children }: { children: React.ReactNode }) {
-  const { user, loading, needsOnboarding } = useAuth();
-  if (loading) return <div>Loading...</div>;
-  if (!user) return <Navigate to="/login" replace />;
-  if (!needsOnboarding) return <Navigate to="/dashboard" replace />;
-  return <>{children}</>;
-}

@@ -6,7 +6,6 @@ const AuthContext = createContext<any>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -24,28 +23,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  // Check onboarding status when user changes
-  useEffect(() => {
-    const checkOnboarding = async () => {
-      if (!user) {
-        setNeedsOnboarding(false);
-        return;
-      }
-      // Fetch user profile from Supabase
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('mobile_number,plan')
-        .eq('id', user.id)
-        .single();
-      // If profile is missing or required fields are missing, needs onboarding
-      if (error || !data || !data.mobile_number || !data.plan) {
-        setNeedsOnboarding(true);
-      } else {
-        setNeedsOnboarding(false);
-      }
-    };
-    checkOnboarding();
-  }, [user]);
+
 
   // Helper to extract Google profile info
   const getGoogleProfile = (user: any) => {
@@ -71,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, googleProfile: getGoogleProfile(user), needsOnboarding }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, googleProfile: getGoogleProfile(user) }}>
       {children}
     </AuthContext.Provider>
   );
