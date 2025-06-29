@@ -26,11 +26,8 @@ const Onboarding: React.FC = () => {
       plan: form.plan,
       referral_source: form.referral_source
     });
-    // Set needsOnboarding to false after onboarding
-    if (typeof window !== 'undefined') {
-      // quick hack: reload to re-trigger context check
-      window.location.href = '/dashboard';
-    }
+    // Navigate to dashboard after onboarding
+    navigate('/dashboard');
     setLoading(false);
   };
 
@@ -88,6 +85,9 @@ const Onboarding: React.FC = () => {
       </form>
     </div>
   );
+};
+
+export default Onboarding;
 };
 
 export default Onboarding;
