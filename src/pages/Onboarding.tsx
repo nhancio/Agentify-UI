@@ -88,6 +88,3 @@ const Onboarding: React.FC = () => {
 };
 
 export default Onboarding;
-};
-
-export default Onboarding;
