@@ -146,6 +146,9 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
                       src={agent.thumbnailUrl} 
                       alt={agent.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={e => {
+                        (e.target as HTMLImageElement).src = '/default-avatar.png';
+                      }}
                     />
                     
                     {/* Overlay */}

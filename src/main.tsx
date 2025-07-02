@@ -20,7 +20,17 @@ import Calls from './pages/Calls';
 import Team from './pages/Team';
 import Profile from './pages/Profile';
 import MyVideoAgents from './pages/MyVideoAgents';
+import Onboarding from './pages/Onboarding';
 
+
+function ProtectedRouteWithOnboarding({ children }: { children: React.ReactNode }) {
+  const { user, loading, isNewUser } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (isNewUser) return <Navigate to="/onboarding" replace />;
+  return <>{children}</>;
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -31,60 +41,65 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/video-agents" element={
+          <Route path="/onboarding" element={
             <ProtectedRoute>
-              <VideoAgents />
+              <Onboarding />
             </ProtectedRoute>
+          } />
+          <Route path="/video-agents" element={
+            <ProtectedRouteWithOnboarding>
+              <VideoAgents />
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/my-video-agents" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <MyVideoAgents />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/voice-agents" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <VoiceAgents />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/dashboard" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <Dashboard />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/analytics" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <Analytics />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/billing" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <Billing />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/settings" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <Settings />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/calls" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <Calls />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/builder" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <AgentBuilder />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/team" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <Team />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           <Route path="/profile" element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <Profile />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           } />
           {/* Add Profile route if you have one */}
         </Routes>

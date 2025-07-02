@@ -43,6 +43,9 @@ const VideoAgentPreview: React.FC<VideoAgentPreviewProps> = ({ agent, className 
               src={agent.thumbnailUrl} 
               alt={agent.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              onError={e => {
+                (e.target as HTMLImageElement).src = '/default-avatar.png';
+              }}
             />
             
             {/* Overlay */}

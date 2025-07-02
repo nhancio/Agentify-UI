@@ -6,6 +6,7 @@ const AuthContext = createContext<any>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [isNewUser, setIsNewUser] = useState<boolean>(false);
 
   useEffect(() => {
     setLoading(true);
@@ -14,8 +15,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
+      // Check if user exists in users table by UUID
+      if (session?.user) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', session.user.id)
+          .single();
+        setIsNewUser(!data || !!error);
+      } else {
+        setIsNewUser(false);
+      }
     });
 
     return () => {
@@ -49,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, googleProfile: getGoogleProfile(user) }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, googleProfile: getGoogleProfile(user), isNewUser, setIsNewUser }}>
       {children}
     </AuthContext.Provider>
   );

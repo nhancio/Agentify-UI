@@ -110,6 +110,11 @@ const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
                     src={googleProfile.avatar}
                     alt={googleProfile.name}
                     className="w-10 h-10 rounded-full object-cover"
+                    onError={e => {
+                      // fallback to initials if image fails to load (e.g., 429 error)
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      // Optionally, you could set a state to show initials instead
+                    }}
                   />
                 ) : (
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
