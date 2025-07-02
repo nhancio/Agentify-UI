@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import AgentBuilder from './pages/AgentBuilder';
 import VoiceAgents from './pages/VoiceAgents';
 import VideoAgents from './pages/VideoAgents';
+import MyVideoAgents from './pages/MyVideoAgents';
 import Marketplace from './pages/Marketplace';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
@@ -89,6 +90,7 @@ function AppRoutes() {
         <Route path="/builder" element={<AgentBuilder />} />
         <Route path="/voice-agents" element={<VoiceAgents />} />
         <Route path="/video-agents" element={<VideoAgents />} />
+        <Route path="/my-video-agents" element={<MyVideoAgents />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/billing" element={<Billing />} />

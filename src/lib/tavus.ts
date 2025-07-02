@@ -69,6 +69,9 @@ export class TavusService {
           'x-api-key': this.apiKey,
         },
       });
+      // Debug: print status and headers
+      console.debug('[TavusService] testConnection status:', response.status, response.statusText);
+      console.debug('[TavusService] testConnection headers:', [...response.headers.entries()]);
       
       if (!response.ok) {
         if (response.status === 401) {
@@ -212,12 +215,19 @@ export class TavusService {
       },
     });
 
+    // Debug: print status and headers
+    console.debug('[TavusService] getPersonas status:', response.status, response.statusText);
+    console.debug('[TavusService] getPersonas headers:', [...response.headers.entries()]);
+
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('[TavusService] getPersonas error:', errorText);
       throw new Error(`Failed to get personas: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.debug('[TavusService] getPersonas data:', data);
+    return data;
   }
 
   // Create a persona (conversation personality)

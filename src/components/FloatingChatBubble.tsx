@@ -34,7 +34,7 @@ const FloatingChatBubble: React.FC = () => {
       }, 4000);
       return () => clearInterval(interval);
     }
-  }, [isVisible, isExpanded]);
+  }, [isVisible, isExpanded, messages.length]);
 
   const startVideoSupport = async () => {
     setLoading(true);

@@ -18,6 +18,8 @@ import './index.css';
 import { CallLogs } from './components/CallLogs';
 import Calls from './pages/Calls';
 import Team from './pages/Team';
+import Profile from './pages/Profile';
+import MyVideoAgents from './pages/MyVideoAgents';
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -32,6 +34,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/video-agents" element={
             <ProtectedRoute>
               <VideoAgents />
+            </ProtectedRoute>
+          } />
+          <Route path="/my-video-agents" element={
+            <ProtectedRoute>
+              <MyVideoAgents />
             </ProtectedRoute>
           } />
           <Route path="/voice-agents" element={
@@ -72,6 +79,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/team" element={
             <ProtectedRoute>
               <Team />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           } />
           {/* Add Profile route if you have one */}

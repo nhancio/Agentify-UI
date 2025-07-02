@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Bot, 
@@ -12,20 +12,23 @@ import {
   Video,
   Mic,
   Moon,
-  Sun
+  Sun,
+  User,
+  Bell,
+  Shield,
+  Globe,
+  Key,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Agent Builder', href: '/builder', icon: Bot },
-  { name: 'Voice Agents', href: '/voice-agents', icon: Mic },
-  { name: 'Video Agents', href: '/video-agents', icon: Video },
   { name: 'Marketplace', href: '/marketplace', icon: Store },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Call History', href: '/calls', icon: Phone },
-  { name: 'Billing', href: '/billing', icon: CreditCard },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'My Video Agents', href: '/my-video-agents', icon: Users },
+  { name: 'Video Call History', href: '/video-agents', icon: Video },
+  { name: 'My Audio Agents', href: '/voice-agents', icon: Mic },
+  { name: 'Voice Call History', href: '/calls', icon: Phone },
 ];
 
 interface SidebarProps {
@@ -35,7 +38,8 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
   const location = useLocation();
-  const { googleProfile } = useAuth();
+  const navigate = useNavigate(); // add useNavigate
+  const { googleProfile, signOut } = useAuth();
   const [isDark, setIsDark] = React.useState(
     document.documentElement.classList.contains('dark')
   );
@@ -94,9 +98,12 @@ const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
             })}
           </nav>
 
-          {/* User Profile */}
+          {/* User Profile - direct navigation to /profile */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 p-4 rounded-lg transition-colors duration-300">
+            <div 
+              className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 p-4 rounded-lg transition-colors duration-300 cursor-pointer relative"
+              onClick={() => navigate('/profile')}
+            >
               <div className="flex items-center">
                 {googleProfile?.avatar ? (
                   <img

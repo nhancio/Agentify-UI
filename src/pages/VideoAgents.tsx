@@ -239,8 +239,8 @@ const VideoAgents: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Video Agents</h1>
-              <p className="text-gray-600">Create and manage AI video agents powered by Tavus technology.</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Video Call History</h1>
+              <p className="text-gray-600">All your Tavus video conversations are listed here.</p>
             </div>
             <div className="flex items-center space-x-4">
               <button 
@@ -406,7 +406,7 @@ const VideoAgents: React.FC = () => {
               <div className="text-red-600">{convError}</div>
             )}
             {!convLoading && !convError && conversations.length === 0 && (
-              <div className="text-gray-500">No conversations found.</div>
+              <div className="text-gray-500">No video conversations found.</div>
             )}
             {!convLoading && !convError && conversations.length > 0 && (
               <div className="overflow-x-auto">

@@ -37,16 +37,18 @@ const TavusSetup: React.FC = () => {
     
     try {
       const result = await tavusService.testConnection();
-      if (result.success) {
-        setConnectionStatus('connected');
-        await loadAllData();
-      } else {
+      console.debug('[TavusSetup] testConnection:', result);
+      if (!result.success) {
         setConnectionStatus('error');
         setError(result.message);
+        return;
       }
+      setConnectionStatus('connected');
+      await loadAllData();
     } catch (err) {
       setConnectionStatus('error');
       setError(err instanceof Error ? err.message : 'Connection failed');
+      console.error('[TavusSetup] Connection error:', err);
     }
   };
 
@@ -59,6 +61,21 @@ const TavusSetup: React.FC = () => {
         tavusService.getConversations(),
         tavusService.getAccountInfo()
       ]);
+      // Debug logs for all API responses
+      console.debug('[TavusSetup] Replicas:', replicasData);
+      console.debug('[TavusSetup] Personas:', personasData);
+      console.debug('[TavusSetup] Conversations:', conversationsData);
+      console.debug('[TavusSetup] Account Info:', accountData);
+
+      if (typeof window !== 'undefined') {
+        // @ts-ignore
+        window.tavusDebug = {
+          replicas: replicasData,
+          personas: personasData,
+          conversations: conversationsData,
+          account: accountData
+        };
+      }
       
       if (replicasData.status === 'fulfilled') {
         setReplicas(replicasData.value.replicas || []);

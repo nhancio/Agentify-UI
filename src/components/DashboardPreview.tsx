@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Pause, BarChart3, Phone, Users, TrendingUp } from 'lucide-react';
+import { Play, BarChart3, Phone, Users, TrendingUp } from 'lucide-react';
 
 const DashboardPreview: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
