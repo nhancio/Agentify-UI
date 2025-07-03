@@ -211,7 +211,7 @@ const FloatingChatBubble: React.FC = () => {
               </button>
               <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                 <button className="hover:underline">Text Chat</button>
-                <button onClick={() => window.location.href = 'mailto:support@agently.ai'} className="hover:underline">Email</button>
+                <button onClick={() => window.location.href = 'mailto:support@agentlybot.com'} className="hover:underline">Email</button>
               </div>
             </div>
           )}

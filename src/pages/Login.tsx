@@ -27,7 +27,7 @@ const Login: React.FC = () => {
               <Bot className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
-            <p className="text-gray-600 mt-2">Sign in to your Agently.ai account</p>
+            <p className="text-gray-600 mt-2">Sign in to your Agentlybot.com account</p>
           </div>
 
           {/* Google Sign In Button */}

@@ -149,7 +149,7 @@ const Landing: React.FC = () => {
     {
       name: 'Sarah Johnson',
       role: 'HR Director at TechCorp',
-      content: 'Agently.ai has revolutionized our recruitment process. We screen 10x more candidates while maintaining quality. The AI agents are incredibly natural and professional.',
+      content: 'Agentlybot.com has revolutionized our recruitment process. We screen 10x more candidates while maintaining quality. The AI agents are incredibly natural and professional.',
       rating: 5,
       avatar: 'SJ'
     },
@@ -461,7 +461,7 @@ const Landing: React.FC = () => {
                 </span>
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                See how businesses are using Agently.ai to automate conversations and improve customer experiences.
+                See how businesses are using agentlybot.com to automate conversations and improve customer experiences.
               </p>
             </div>
           </ScrollReveal>
@@ -672,7 +672,7 @@ const Landing: React.FC = () => {
                 </span>
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                Join thousands of businesses already using Agently.ai to automate conversations and grow their business.
+                Join thousands of businesses already using agentlybot.com to automate conversations and grow their business.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -708,7 +708,7 @@ const Landing: React.FC = () => {
                 <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
                   <Bot className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-xl font-bold">Agently.ai</span>
+                <span className="text-xl font-bold">agentlybot.com</span>
               </div>
               <p className="text-gray-400 mb-4">
                 The future of AI-powered customer interactions. Build intelligent agents that work 24/7.
@@ -752,7 +752,7 @@ const Landing: React.FC = () => {
           </div>
           
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Agently.ai. All rights reserved. Built with ❤️ for the future of AI.</p>
+            <p>&copy; 2024 agentlybot.com. All rights reserved. Built with ❤️ for the future of AI.</p>
           </div>
         </div>
       </footer>

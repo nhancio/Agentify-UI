@@ -257,7 +257,7 @@ const VideoSupportWidget: React.FC<VideoSupportWidgetProps> = ({
                       <span className="text-xs text-gray-600 dark:text-gray-400">Call</span>
                     </button>
                     <button 
-                      onClick={() => window.location.href = 'mailto:support@agently.ai'}
+                      onClick={() => window.location.href = 'mailto:support@agentlybot.com'}
                       className="flex flex-col items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400 mb-1" />
