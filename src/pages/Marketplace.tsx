@@ -86,14 +86,19 @@ const Marketplace: React.FC = () => {
                         </div>
                       </div>
                       <p className="text-sm text-gray-600 mb-4 line-clamp-2">{agent.description}</p>
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between space-x-2">
                         <div className="flex items-center text-sm text-gray-500">
                           <Users className="h-4 w-4 mr-1" />
                           {agent['no.of_subscribers'] || agent.subscribers || 0} Subscribers
                         </div>
-                        <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg text-sm font-medium">
-                          View Agent
-                        </button>
+                        <div className="flex space-x-2">
+                          <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg text-sm font-medium">
+                            View Agent
+                          </button>
+                          <button className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:shadow-lg text-sm font-medium">
+                            Hire Agent
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

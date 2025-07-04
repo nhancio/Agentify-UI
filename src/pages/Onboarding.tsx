@@ -4,9 +4,19 @@ import { Bot, Building, Phone, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
+const countryCodes = [
+  { code: '+1', label: '🇺🇸 US' },
+  { code: '+91', label: '🇮🇳 IN' },
+  { code: '+44', label: '🇬🇧 UK' },
+  { code: '+61', label: '🇦🇺 AU' },
+  { code: '+81', label: '🇯🇵 JP' },
+  // Add more as needed
+];
+
 const Onboarding: React.FC = () => {
   const { user, setIsNewUser } = useAuth();
   const [form, setForm] = useState({
+    country_code: '+1',
     mobile_number: '',
     referral_source: '',
     company: '',
@@ -20,6 +30,13 @@ const Onboarding: React.FC = () => {
     setForm(prev => ({
       ...prev,
       [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setForm(prev => ({
+      ...prev,
+      country_code: e.target.value
     }));
   };
 
@@ -40,7 +57,7 @@ const Onboarding: React.FC = () => {
         const { error } = await supabase.from('users').insert({
           id: user.id,
           email: user.email,
-          mobile_number: form.mobile_number,
+          mobile_number: `${form.country_code}${form.mobile_number}`,
           referral_source: form.referral_source,
           company: form.company,
           plan: form.plan
@@ -75,30 +92,49 @@ const Onboarding: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Mobile Number</label>
-              <div className="relative">
+              <div className="relative flex">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <select
+                  name="country_code"
+                  value={form.country_code}
+                  onChange={handleCountryCodeChange}
+                  className="pl-10 pr-2 py-3 border border-gray-300 rounded-l-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  style={{ minWidth: 90 }}
+                >
+                  {countryCodes.map((c) => (
+                    <option key={c.code} value={c.code}>{c.label} {c.code}</option>
+                  ))}
+                </select>
                 <input
                   type="tel"
                   name="mobile_number"
                   value={form.mobile_number}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full pl-4 pr-4 py-3 border-t border-b border-r border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your mobile number"
                   required
+                  style={{ marginLeft: '-1px' }}
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Where did you hear about us?</label>
-              <input
-                type="text"
+              <select
                 name="referral_source"
                 value={form.referral_source}
                 onChange={handleChange}
                 className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g. Google, LinkedIn, Friend"
                 required
-              />
+              >
+                <option value="">Select an option</option>
+                <option value="Google">Google</option>
+                <option value="Facebook">Facebook</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Twitter">Twitter</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Friend">Friend</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
