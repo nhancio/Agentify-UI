@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const WORDPRESS_API_URL = 'https://public-api.wordpress.com/rest/v1.1/sites/nithindidigam.wordpress.com/posts/';
+const WORDPRESS_API_URL = 'https://public-api.wordpress.com/rest/v1.1/sites/agentlybotblogs.wordpress.com/posts/';
 
 const BlogPost: React.FC = () => {
   const { id } = useParams();

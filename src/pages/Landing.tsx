@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 import { billingService } from '../lib/api';
 
-const WORDPRESS_API_URL = 'https://public-api.wordpress.com/rest/v1.1/sites/nithindidigam.wordpress.com/posts/';
+const WORDPRESS_API_URL = 'https://public-api.wordpress.com/rest/v1.1/sites/agentlybotblogs.wordpress.com/posts/';
 
 const Landing: React.FC = () => {
   const { user } = useAuth();
