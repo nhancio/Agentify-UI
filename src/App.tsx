@@ -14,6 +14,7 @@ import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Billing from './pages/Billing';
 import AdminDashboard from './pages/AdminDashboard';
+import BlogPost from './pages/BlogPost';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -103,6 +104,7 @@ function AppRoutes() {
             </ProtectedRoute>
           } 
         />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

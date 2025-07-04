@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import TypewriterText from '../components/TypewriterText';
@@ -37,10 +37,15 @@ import {
 } from 'lucide-react';
 import { billingService } from '../lib/api';
 
+const WORDPRESS_API_URL = 'https://public-api.wordpress.com/rest/v1.1/sites/nithindidigam.wordpress.com/posts/';
+
 const Landing: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showVideoSupport, setShowVideoSupport] = useState(false);
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [loadingBlogs, setLoadingBlogs] = useState(true);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -49,6 +54,22 @@ const Landing: React.FC = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    // Fetch WordPress blog posts
+    const fetchBlogs = async () => {
+      setLoadingBlogs(true);
+      try {
+        const res = await fetch(WORDPRESS_API_URL);
+        const data = await res.json();
+        setBlogPosts(data.posts || []);
+      } catch {
+        setBlogPosts([]);
+      }
+      setLoadingBlogs(false);
+    };
+    fetchBlogs();
   }, []);
 
   const typewriterTexts = [
@@ -233,6 +254,10 @@ const Landing: React.FC = () => {
       alert('Unable to start checkout. Please contact support.');
     }
   };
+
+  // Helper to slugify use case titles
+  const slugify = (str: string) =>
+    str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
   return (
     <div className="min-h-screen w-full bg-white dark:bg-gray-900 transition-colors duration-300 overflow-x-hidden">
@@ -449,65 +474,53 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Use Cases Section */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-800/50">
+      {/* Use Cases Section replaced with Blog Cards */}
+      <section className="py-24 bg-gray-50 dark:bg-gray-800/50" id="blogs-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal direction="up">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                Proven Use Cases
+                Latest from Our Blog
                 <span className="block bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Across Industries
+                  Insights & Use Cases
                 </span>
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                See how businesses are using agentlybot.com to automate conversations and improve customer experiences.
+                See how businesses are using agentlybot.com and get the latest updates.
               </p>
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {useCases.map((useCase, index) => (
-              <ScrollReveal key={index} direction="up" delay={index * 200}>
-                <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group hover:-translate-y-2">
-                  <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={useCase.image} 
-                      alt={useCase.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                    
-                    {/* Stats overlay */}
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="flex justify-between text-white text-sm">
-                        <div className="text-center">
-                          <div className="font-bold">{useCase.stats.calls}</div>
-                          <div className="text-xs opacity-80">Calls</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-bold text-green-400">{useCase.stats.success}</div>
-                          <div className="text-xs opacity-80">Success</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-bold">{useCase.stats.time}</div>
-                          <div className="text-xs opacity-80">Duration</div>
-                        </div>
-                      </div>
+          {loadingBlogs ? (
+            <div className="text-center text-gray-500 py-12">Loading blogs...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {blogPosts.map((post, index) => (
+                <ScrollReveal key={post.ID} direction="up" delay={index * 200}>
+                  <div
+                    className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group hover:-translate-y-2 cursor-pointer"
+                    onClick={() => navigate(`/blog/${post.ID}`)}
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={post.featured_image || 'https://placehold.co/400x200?text=No+Image'}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed line-clamp-3" dangerouslySetInnerHTML={{ __html: post.excerpt }} />
+                      <div className="text-xs text-gray-400">{new Date(post.date).toLocaleDateString()}</div>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {useCase.title}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                      {useCase.description}
-                    </p>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

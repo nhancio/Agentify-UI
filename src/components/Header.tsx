@@ -50,6 +50,22 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             >
               Marketplace
             </Link>
+            <button
+              type="button"
+              className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+              onClick={e => {
+                e.preventDefault();
+                if (window.location.pathname === "/" || window.location.pathname === "/landing") {
+                  const section = document.getElementById("blogs-section");
+                  if (section) section.scrollIntoView({ behavior: "smooth" });
+                } else {
+                  window.location.href = "/#blogs-section";
+                }
+              }}
+            >
+              Blogs
+            </button>
             <Link 
               to="#"
               className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
@@ -116,6 +132,23 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               >
                 Marketplace
               </Link>
+              <button
+                type="button"
+                className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium py-2 text-left"
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                onClick={e => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  if (window.location.pathname === "/" || window.location.pathname === "/landing") {
+                    const section = document.getElementById("blogs-section");
+                    if (section) section.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    window.location.href = "/#blogs-section";
+                  }
+                }}
+              >
+                Blogs
+              </button>
               <Link 
                 to="#"
                 className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium py-2"

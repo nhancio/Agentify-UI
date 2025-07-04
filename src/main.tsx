@@ -21,6 +21,7 @@ import Team from './pages/Team';
 import Profile from './pages/Profile';
 import MyVideoAgents from './pages/MyVideoAgents';
 import Onboarding from './pages/Onboarding';
+import BlogPost from './pages/BlogPost';
 
 
 function ProtectedRouteWithOnboarding({ children }: { children: React.ReactNode }) {
@@ -101,6 +102,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Profile />
             </ProtectedRouteWithOnboarding>
           } />
+          <Route path="/blog/:id" element={<BlogPost />} />
           {/* Add Profile route if you have one */}
         </Routes>
       </BrowserRouter>
