@@ -27,7 +27,7 @@ const navigation = [
   { name: 'Marketplace', href: '/marketplace', icon: Store },
   { name: 'My Video Agents', href: '/my-video-agents', icon: Users },
   { name: 'Video Call History', href: '/video-agents', icon: Video },
-  { name: 'My Audio Agents', href: '/voice-agents', icon: Mic },
+  { name: 'My Voice Agents', href: '/voice-agents', icon: Mic },
   { name: 'Voice Call History', href: '/calls', icon: Phone },
 ];
 
