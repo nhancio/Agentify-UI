@@ -5,20 +5,16 @@ const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState<boolean>(false);
 
   useEffect(() => {
     setLoading(true);
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
-
+    // Always watch auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
-      // Check if user exists in users table by UUID
       if (session?.user) {
+        // Check if user exists in users table by UUID
         const { data, error } = await supabase
           .from('users')
           .select('id')
@@ -28,14 +24,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         setIsNewUser(false);
       }
+      setLoading(false);
+    });
+
+    // On mount, get current session
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+      if (data.session?.user) {
+        supabase
+          .from('users')
+          .select('id')
+          .eq('id', data.session.user.id)
+          .single()
+          .then(({ data, error }) => {
+            setIsNewUser(!data || !!error);
+            setLoading(false);
+          });
+      } else {
+        setIsNewUser(false);
+        setLoading(false);
+      }
     });
 
     return () => {
       listener?.subscription.unsubscribe();
     };
   }, []);
-
-
 
   // Helper to extract Google profile info
   const getGoogleProfile = (user: any) => {
