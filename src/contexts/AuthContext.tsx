@@ -10,40 +10,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     setLoading(true);
-    // Always watch auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        // Check if user exists in users table by UUID
+    const checkUserRow = async (sessionUser: any) => {
+      if (!sessionUser) {
+        setIsNewUser(false);
+        setLoading(false);
+        return;
+      }
+      try {
         const { data, error } = await supabase
           .from('users')
           .select('id')
-          .eq('id', session.user.id)
+          .eq('email', sessionUser.email)
           .single();
         setIsNewUser(!data || !!error);
-      } else {
-        setIsNewUser(false);
+      } catch (err) {
+        setIsNewUser(true);
       }
       setLoading(false);
+    };
+
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setUser(session?.user ?? null);
+      await checkUserRow(session?.user ?? null);
     });
 
     // On mount, get current session
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
-      if (data.session?.user) {
-        supabase
-          .from('users')
-          .select('id')
-          .eq('id', data.session.user.id)
-          .single()
-          .then(({ data, error }) => {
-            setIsNewUser(!data || !!error);
-            setLoading(false);
-          });
-      } else {
-        setIsNewUser(false);
-        setLoading(false);
-      }
+      checkUserRow(data.session?.user ?? null);
     });
 
     return () => {

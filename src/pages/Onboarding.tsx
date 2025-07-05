@@ -46,24 +46,16 @@ const Onboarding: React.FC = () => {
     setError('');
     try {
       if (!user) throw new Error('Not authenticated');
-      // Check if user already exists in users table
-      const { data: existingUser, error: fetchError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('id', user.id)
-        .single();
-      if (!existingUser) {
-        // Insert new user record with onboarding details
-        const { error } = await supabase.from('users').insert({
-          id: user.id,
-          email: user.email,
-          mobile_number: `${form.country_code}${form.mobile_number}`,
-          referral_source: form.referral_source,
-          company: form.company,
-          plan: form.plan
-        });
-        if (error) throw error;
-      }
+      // Upsert user record in users table by PRIMARY KEY (id)
+      const { error } = await supabase.from('users').upsert({
+        id: user.id,
+        email: user.email,
+        mobile_number: `${form.country_code}${form.mobile_number}`,
+        referral_source: form.referral_source,
+        company: form.company,
+        plan: form.plan
+      });
+      if (error) throw error;
       setIsNewUser(false);
       navigate('/dashboard');
     } catch (err: any) {
@@ -179,5 +171,6 @@ const Onboarding: React.FC = () => {
     </div>
   );
 };
+
 
 export default Onboarding;
