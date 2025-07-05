@@ -85,6 +85,19 @@ const Profile: React.FC = () => {
                   <span className="text-gray-700">{profile?.mobile_number || '-'}</span>
                 </div>
               </div>
+              {/* Credits Section */}
+              <div className="mt-8 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-100">
+                <div className="flex items-center mb-2">
+                  <span className="font-semibold text-blue-700 text-lg mr-2">Credits</span>
+                  <span className="text-xs text-gray-500">(Voice/Video minutes or tokens)</span>
+                </div>
+                <div className="text-2xl font-bold text-blue-900">
+                  {profile.credits !== undefined ? profile.credits : '0'}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Need more? <a href="/billing" className="text-blue-600 hover:underline">Upgrade your plan</a>
+                </div>
+              </div>
             </div>
           )}
         </div>

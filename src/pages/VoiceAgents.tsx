@@ -118,7 +118,12 @@ const VoiceAgents: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">My Voice Agents</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                My Voice Agents
+                <span className="ml-3 text-base font-normal text-blue-600 align-middle">
+                  ({elAgents.length})
+                </span>
+              </h1>
               <p className="text-gray-600">Manage your ElevenLabs voice agents for phone calls and customer interactions.</p>
             </div>
             <button 
