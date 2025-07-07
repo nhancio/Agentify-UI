@@ -10,7 +10,7 @@ const Footer: React.FC = () => (
             <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
               <Bot className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold">agentlybot.com</span>
+            <span className="text-xl font-bold">agentlybot</span>
           </div>
           <p className="text-gray-400 mb-4">
             The future of AI-powered customer interactions. Build intelligent agents that work 24/7.
