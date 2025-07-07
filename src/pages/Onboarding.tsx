@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bot, Building, Phone, User } from 'lucide-react';
+import { Bot, Building, Phone } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -10,7 +10,6 @@ const countryCodes = [
   { code: '+44', label: '🇬🇧 UK' },
   { code: '+61', label: '🇦🇺 AU' },
   { code: '+81', label: '🇯🇵 JP' },
-  // Add more as needed
 ];
 
 const Onboarding: React.FC = () => {
@@ -46,15 +45,27 @@ const Onboarding: React.FC = () => {
     setError('');
     try {
       if (!user) throw new Error('Not authenticated');
-      // Upsert user record in users table by PRIMARY KEY (id)
+
+      // Strip any non-digit characters and remove accidental country code in number
+      let rawNumber = form.mobile_number.replace(/\D/g, '');
+
+      // If the number starts with the same digits as country code, strip them
+      const countryDigits = form.country_code.replace('+', '');
+      if (rawNumber.startsWith(countryDigits)) {
+        rawNumber = rawNumber.slice(countryDigits.length);
+      }
+
+      const fullPhoneNumber = `${form.country_code}${rawNumber}`;
+
       const { error } = await supabase.from('users').upsert({
         id: user.id,
         email: user.email,
-        mobile_number: `${form.country_code}${form.mobile_number}`,
+        mobile_number: fullPhoneNumber,
         referral_source: form.referral_source,
         company: form.company,
         plan: form.plan
       });
+
       if (error) throw error;
       setIsNewUser(false);
       navigate('/dashboard');
@@ -171,6 +182,5 @@ const Onboarding: React.FC = () => {
     </div>
   );
 };
-
 
 export default Onboarding;
