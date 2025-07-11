@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../contexts/AuthContext';
-import { User, Mail, Building, Phone } from 'lucide-react';
+import { User, Mail, Building, Phone, Zap, Crown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const Profile: React.FC = () => {
@@ -34,10 +34,10 @@ const Profile: React.FC = () => {
   }, [user]);
 
   return (
-    <div className="flex">
+    <div className="flex flex-col md:flex-row">
       <Sidebar />
-      <div className="ml-64 flex-1 p-8 pt-24">
-        <div className="max-w-xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+      <div className="md:ml-64 flex-1 p-4 sm:p-8 pt-24">
+        <div className="max-w-xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
             <User className="w-6 h-6 mr-2 text-blue-600" />
             Profile
@@ -48,7 +48,7 @@ const Profile: React.FC = () => {
             <div className="text-center text-gray-500">No profile found in users table.</div>
           ) : (
             <div className="space-y-6">
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 {googleProfile?.avatar ? (
                   <img
                     src={googleProfile.avatar}
@@ -85,17 +85,30 @@ const Profile: React.FC = () => {
                   <span className="text-gray-700">{profile?.mobile_number || '-'}</span>
                 </div>
               </div>
-              {/* Credits Section */}
-              <div className="mt-8 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-100">
-                <div className="flex items-center mb-2">
-                  <span className="font-semibold text-blue-700 text-lg mr-2">Credits</span>
-                  <span className="text-xs text-gray-500">(Voice/Video minutes or tokens)</span>
+              {/* Credits & Billing Card */}
+              <div className="rounded-xl border border-gray-200 bg-gray-50 dark:bg-gray-900 p-4 sm:p-6 mt-6 shadow flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <Zap className="w-6 h-6 text-yellow-500" />
+                  <div>
+                    <div className="font-semibold text-gray-900 dark:text-white">Credits & Billing</div>
+                    <div className="text-xs text-gray-500">Manage your credits and subscription</div>
+                  </div>
                 </div>
-                <div className="text-2xl font-bold text-blue-900">
-                  {profile.credits !== undefined ? profile.credits : '0'}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-black/5 dark:bg-white/5 rounded-lg p-4">
+                  <div>
+                    <div className="text-3xl font-bold text-gray-900 dark:text-white">{profile.credits ?? 0}</div>
+                    <div className="text-xs text-gray-500">Available Credits</div>
+                  </div>
+                  <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                    <Zap className="w-4 h-4" /> Add Credits
+                  </button>
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  Need more? <a href="/billing" className="text-blue-600 hover:underline">Upgrade your plan</a>
+                <button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 mt-2 hover:from-purple-700 hover:to-blue-700 transition">
+                  <Crown className="w-5 h-5" />
+                  Upgrade to Enterprise
+                </button>
+                <div className="text-xs text-gray-500 text-center">
+                  Unlimited generations, priority support, and more
                 </div>
               </div>
             </div>
