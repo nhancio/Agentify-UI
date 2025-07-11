@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import VoiceAgentBuilder from '../components/VoiceAgentBuilder';
-import { 
-  Bot, 
-  Phone, 
-  Play, 
-  Pause, 
-  Settings, 
+import {
+  Bot,
+  Phone,
+  Play,
+  Pause,
+  Settings,
   Plus,
   BarChart3,
   Users,
@@ -18,13 +18,14 @@ import {
 } from 'lucide-react';
 import { agentService } from '../lib/api';
 import { voiceAgentService } from '../lib/voiceAgent';
-import type { Agent } from '../lib/supabase';
-import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
+import { supabase } from '../lib/supabase';
 
 const VoiceAgents: React.FC = () => {
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [agents, setAgents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [showBuilder, setShowBuilder] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<any | null>(null);
   const [stats, setStats] = useState({
     totalAgents: 0,
     activeAgents: 0,
@@ -36,19 +37,21 @@ const VoiceAgents: React.FC = () => {
   const [elLoading, setElLoading] = useState(false);
 
   useEffect(() => {
-    fetchElevenLabsAgents();
+    fetchAgents();
   }, []);
 
-  const fetchElevenLabsAgents = async () => {
-    setElLoading(true);
+  const fetchAgents = async () => {
+    setLoading(true);
+    setError('');
     try {
-      const client = new ElevenLabsClient({ apiKey: import.meta.env.VITE_ELEVENLABS_API_KEY });
-      const res = await client.conversationalAi.agents.list();
-      setElAgents(res.agents || []);
-    } catch (err) {
-      setElAgents([]);
+      const { data, error } = await supabase.from('agents').select('*').eq('category', 'voice');
+      if (error) throw error;
+      setAgents(data || []);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch voice agents');
+      setAgents([]);
     } finally {
-      setElLoading(false);
+      setLoading(false);
     }
   };
 
@@ -57,35 +60,14 @@ const VoiceAgents: React.FC = () => {
     setShowBuilder(true);
   };
 
-  const handleEditAgent = (agent: Agent) => {
+  const handleEditAgent = (agent: any) => {
     setSelectedAgent(agent);
     setShowBuilder(true);
   };
 
-  const handleAgentSaved = (agent: Agent) => {
+  const handleAgentSaved = (agent: any) => {
     setShowBuilder(false);
-    loadAgents();
-  };
-
-  const toggleAgentStatus = async (agent: Agent) => {
-    try {
-      const newStatus = agent.status === 'active' ? 'paused' : 'active';
-      await agentService.updateAgent(agent.id, { status: newStatus });
-      loadAgents();
-    } catch (error) {
-      console.error('Error updating agent status:', error);
-    }
-  };
-
-  const deployAgent = async (agent: Agent) => {
-    try {
-      await voiceAgentService.deployAgent(agent.id);
-      loadAgents();
-      alert('Agent deployed successfully! Phone number assigned.');
-    } catch (error) {
-      console.error('Error deploying agent:', error);
-      alert('Error deploying agent. Please try again.');
-    }
+    fetchAgents();
   };
 
   if (showBuilder) {
@@ -101,7 +83,7 @@ const VoiceAgents: React.FC = () => {
               ← Back to Voice Agents
             </button>
           </div>
-          <VoiceAgentBuilder 
+          <VoiceAgentBuilder
             agentId={selectedAgent?.id}
             onSave={handleAgentSaved}
           />
@@ -121,13 +103,13 @@ const VoiceAgents: React.FC = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 My Voice Agents
                 <span className="ml-3 text-base font-normal text-blue-600 align-middle">
-                  ({elAgents.length})
+                  ({agents.length})
                 </span>
               </h1>
-              <p className="text-gray-600">Manage your ElevenLabs voice agents for phone calls and customer interactions.</p>
+              <p className="text-gray-600">Manage your voice agents for phone calls and customer interactions.</p>
             </div>
-            <button 
-              onClick={handleCreateAgent}
+            <button
+              onClick={() => setShowBuilder(true)}
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all flex items-center"
             >
               <Plus className="h-5 w-5 mr-2" />
@@ -135,108 +117,32 @@ const VoiceAgents: React.FC = () => {
             </button>
           </div>
         </div>
-
-        {/* ElevenLabs Agents List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-6">
-          <div className="p-6 border-t border-gray-100">
-            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-              <span>ElevenLabs Agents</span>
-              {elLoading && <span className="text-xs text-gray-400">(Loading...)</span>}
-            </h3>
-            {elAgents.length === 0 && !elLoading && (
-              <div className="text-gray-500 text-sm">No ElevenLabs agents found.</div>
-            )}
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm border">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-3 py-2 border-b text-left">Name</th>
-                    <th className="px-3 py-2 border-b text-left">Agent ID</th>
-                    <th className="px-3 py-2 border-b text-left">Creator</th>
-                    <th className="px-3 py-2 border-b text-left">Created At</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {elAgents.map(agent => (
-                    <tr
-                      key={agent.agent_id}
-                      className="hover:bg-blue-50 cursor-pointer"
-                      onClick={() => setElAgentDetail(agent)}
-                    >
-                      <td className="px-3 py-2 border-b">{agent.name}</td>
-                      <td className="px-3 py-2 border-b">{agent.agent_id}</td>
-                      <td className="px-3 py-2 border-b">{agent.access_info?.creator_name}</td>
-                      <td className="px-3 py-2 border-b">
-                        {agent.created_at_unix_secs
-                          ? new Date(agent.created_at_unix_secs * 1000).toLocaleString()
-                          : ''}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {/* Agent Detail Modal */}
-            {elAgentDetail && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-                <div className="bg-white rounded-xl shadow-lg max-w-lg w-full p-6 relative">
-                  <button
-                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
-                    onClick={() => setElAgentDetail(null)}
-                  >
-                    ×
-                  </button>
-                  <h4 className="text-xl font-bold mb-4">ElevenLabs Agent Details</h4>
-                  <pre className="bg-gray-100 rounded p-4 text-xs overflow-x-auto">
-                    {JSON.stringify(elAgentDetail, null, 2)}
-                  </pre>
+        {error && <div className="text-center text-red-600">{error}</div>}
+        {loading ? (
+          <div className="text-center py-12 text-base">Loading agents...</div>
+        ) : agents.length === 0 ? (
+          <div className="text-center py-12 text-gray-500 text-base">No voice agents found.</div>
+        ) : (
+          <div className="p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {agents.map((agent) => (
+                <div key={agent.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all group w-full p-6 flex flex-col items-center">
+                  {agent.avatar_url || agent.logo ? (
+                    <img src={agent.avatar_url || agent.logo} alt={agent.name} className="w-16 h-16 object-cover rounded-full mb-3" />
+                  ) : (
+                    <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 mb-3">
+                      <Users className="h-8 w-8 text-gray-400" />
+                    </div>
+                  )}
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center">{agent.name}</h3>
+                  <div className="text-xs text-gray-500 mb-2 text-center">{agent.id}</div>
+                  <div className="text-sm text-gray-700 mb-1 text-center">{agent.creator || agent.created_by || 'Unknown Creator'}</div>
+                  <div className="text-xs text-gray-400 text-center">{agent.created_at ? new Date(agent.created_at).toLocaleString() : ''}</div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <BarChart3 className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="ml-3 font-semibold text-blue-900">Analytics</h3>
+              ))}
             </div>
-            <p className="text-blue-700 text-sm mb-4">View detailed performance metrics for your voice agents.</p>
-            <button className="text-blue-600 font-medium hover:text-blue-700">
-              View Analytics →
-            </button>
           </div>
-
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                <Users className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="ml-3 font-semibold text-green-900">Leads</h3>
-            </div>
-            <p className="text-green-700 text-sm mb-4">Manage leads captured by your voice agents.</p>
-            <button className="text-green-600 font-medium hover:text-green-700">
-              View Leads →
-            </button>
-          </div>
-
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
-                <Settings className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="ml-3 font-semibold text-purple-900">Integrations</h3>
-            </div>
-            <p className="text-purple-700 text-sm mb-4">Connect your voice agents to CRM and other tools.</p>
-            <button className="text-purple-600 font-medium hover:text-purple-700">
-              Setup Integrations →
-            </button>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -7,15 +7,18 @@ const Dashboard: React.FC = () => {
   const [voiceAgentsCount, setVoiceAgentsCount] = useState<number | null>(null);
   const [videoAgentsCount, setVideoAgentsCount] = useState<number | null>(null);
   const [callRecordsCount, setCallRecordsCount] = useState<number | null>(null);
+  const [videoCallRecordsCount, setVideoCallRecordsCount] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchCounts = async () => {
       const { count: voiceCount } = await supabase.from('voice_agents').select('*', { count: 'exact', head: true });
       const { count: videoCount } = await supabase.from('video_agents').select('*', { count: 'exact', head: true });
       const { count: callCount } = await supabase.from('call_records').select('*', { count: 'exact', head: true });
+      const { count: videoCallCount } = await supabase.from('video_call_records').select('*', { count: 'exact', head: true });
       setVoiceAgentsCount(voiceCount ?? 0);
       setVideoAgentsCount(videoCount ?? 0);
       setCallRecordsCount(callCount ?? 0);
+      setVideoCallRecordsCount(videoCallCount ?? 0);
     };
     fetchCounts();
   }, []);
@@ -25,7 +28,7 @@ const Dashboard: React.FC = () => {
       <Sidebar />
       <div className="ml-64 flex-1 p-8 pt-24">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 flex flex-col items-center">
             <Mic className="h-8 w-8 text-blue-600 mb-2" />
             <div className="text-2xl font-bold">{voiceAgentsCount !== null ? voiceAgentsCount : '...'}</div>
@@ -40,6 +43,11 @@ const Dashboard: React.FC = () => {
             <Phone className="h-8 w-8 text-green-600 mb-2" />
             <div className="text-2xl font-bold">{callRecordsCount !== null ? callRecordsCount : '...'}</div>
             <div className="text-gray-600 mt-1">Voice Call Records</div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 flex flex-col items-center">
+            <Video className="h-8 w-8 text-pink-600 mb-2" />
+            <div className="text-2xl font-bold">{videoCallRecordsCount !== null ? videoCallRecordsCount : '...'}</div>
+            <div className="text-gray-600 mt-1">Video Call Records</div>
           </div>
         </div>
       </div>

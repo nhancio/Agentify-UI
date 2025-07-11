@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Video, 
-  Play, 
-  Pause, 
-  Save, 
-  Settings, 
+import {
+  Video,
+  Play,
+  Pause,
+  Save,
+  Settings,
   Upload,
   User,
   MessageSquare,
@@ -104,7 +104,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
         context: personaConfig.context,
         default_replica_id: config.replicaId
       });
-      
+
       await loadPersonas();
       setConfig(prev => ({ ...prev, personaId: persona.persona_id }));
       return persona;
@@ -127,7 +127,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
         context: newPersona.context,
         default_replica_id: config.replicaId
       });
-      
+
       await loadPersonas();
       setConfig(prev => ({ ...prev, personaId: persona.persona_id }));
       setShowPersonaCreator(false);
@@ -162,7 +162,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
         ...conversation,
         url: conversation.conversation_url // always use this for iframe or window.open
       });
-      
+
       // Open conversation in new window
       if (conversation.conversation_url) {
         window.open(conversation.conversation_url, '_blank', 'width=800,height=600');
@@ -214,7 +214,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
             <p className="text-gray-600">Create AI video agents using any of your Tavus replicas.</p>
           </div>
           <div className="flex items-center space-x-4">
-            <button 
+            <button
               onClick={startTestConversation}
               disabled={testing || !config.replicaId}
               className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
@@ -227,7 +227,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
               Test Agent
             </button>
             {activeConversation && (
-              <button 
+              <button
                 onClick={endTestConversation}
                 className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
@@ -235,7 +235,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
                 End Test
               </button>
             )}
-            <button 
+            <button
               onClick={saveAgent}
               disabled={loading}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg disabled:opacity-50"
@@ -256,7 +256,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6 space-y-6">
             <h3 className="text-lg font-semibold text-gray-900">Agent Configuration</h3>
-            
+
             {/* Agent Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Agent Name</label>
@@ -285,7 +285,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Video Replica ({readyReplicas.length} available)
               </label>
-              <select 
+              <select
                 value={config.replicaId}
                 onChange={(e) => setConfig(prev => ({ ...prev, replicaId: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -314,7 +314,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Conversation Persona ({personas.length} available)
               </label>
-              <select 
+              <select
                 value={config.personaId}
                 onChange={(e) => setConfig(prev => ({ ...prev, personaId: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -338,7 +338,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
             {/* Language */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-              <select 
+              <select
                 value={config.conversationConfig.language}
                 onChange={(e) => setConfig(prev => ({
                   ...prev,
@@ -366,9 +366,9 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
                 value={config.conversationConfig.maxDuration / 60}
                 onChange={(e) => setConfig(prev => ({
                   ...prev,
-                  conversationConfig: { 
-                    ...prev.conversationConfig, 
-                    maxDuration: parseInt(e.target.value) * 60 
+                  conversationConfig: {
+                    ...prev.conversationConfig,
+                    maxDuration: parseInt(e.target.value) * 60
                   }
                 }))}
                 min="1"
@@ -455,7 +455,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
             <div className="p-6 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">Video Agent Preview</h3>
             </div>
-            
+
             <div className="p-6">
               <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center mb-4">
                 {config.replicaId ? (
@@ -495,7 +495,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
             <div className="p-6 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">Advanced Configuration</h3>
             </div>
-            
+
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -504,34 +504,34 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Recording Enabled</span>
                       <label className="relative inline-flex items-center cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          className="sr-only peer" 
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
                           checked={config.conversationConfig.enableRecording}
                           onChange={(e) => setConfig(prev => ({
                             ...prev,
-                            conversationConfig: { 
-                              ...prev.conversationConfig, 
-                              enableRecording: e.target.checked 
+                            conversationConfig: {
+                              ...prev.conversationConfig,
+                              enableRecording: e.target.checked
                             }
                           }))}
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                       </label>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Transcription Enabled</span>
                       <label className="relative inline-flex items-center cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          className="sr-only peer" 
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
                           checked={config.conversationConfig.enableTranscription}
                           onChange={(e) => setConfig(prev => ({
                             ...prev,
-                            conversationConfig: { 
-                              ...prev.conversationConfig, 
-                              enableTranscription: e.target.checked 
+                            conversationConfig: {
+                              ...prev.conversationConfig,
+                              enableTranscription: e.target.checked
                             }
                           }))}
                         />
@@ -569,7 +569,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
             <div className="p-6 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">Create Custom Persona</h3>
             </div>
-            
+
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Persona Name</label>
@@ -581,7 +581,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
                   placeholder="e.g., Customer Service Agent"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">System Prompt</label>
                 <textarea
@@ -592,7 +592,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
                   placeholder="Define how your agent should behave, what it should say, and how it should respond..."
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Context (Optional)</label>
                 <input
@@ -604,7 +604,7 @@ const VideoAgentBuilder: React.FC<VideoAgentBuilderProps> = ({ agentId, onSave }
                 />
               </div>
             </div>
-            
+
             <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
               <button
                 onClick={() => setShowPersonaCreator(false)}

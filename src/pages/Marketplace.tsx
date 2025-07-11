@@ -50,55 +50,18 @@ const Marketplace: React.FC = () => {
             <div className="overflow-x-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 w-full">
                 {agents.map((agent) => (
-                  <div key={agent.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all group w-full">
-                    <div className="relative h-40 sm:h-48 overflow-hidden flex items-center justify-center bg-gray-50">
-                      {agent.logo ? (
-                        <img
-                          src={agent.logo}
-                          alt={agent.name}
-                          className="w-full h-full object-contain p-6"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-2xl sm:text-4xl font-bold text-gray-300">
-                          {agent.name?.[0] || 'A'}
-                        </div>
-                      )}
-                      {agent.category && (
-                        <div className="absolute top-4 left-4">
-                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {agent.category}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4 sm:p-6">
-                      <div className="flex items-start justify-between mb-2 sm:mb-3">
-                        <div>
-                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">{agent.name}</h3>
-                          <p className="text-xs sm:text-sm text-gray-600">{agent.created_by || ''}</p>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <span className="text-base sm:text-lg font-bold text-blue-600">
-                            {agent.cost ? `$${agent.cost}` : 'Free'}
-                          </span>
-                          <span className="text-xs text-gray-400">Cost</span>
-                        </div>
+                  <div key={agent.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all group w-full p-6 flex flex-col items-center">
+                    {agent.image ? (
+                      <img src={agent.image} alt={agent.name} className="w-16 h-16 object-cover rounded-full mb-3" />
+                    ) : (
+                      <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 mb-3">
+                        <Users className="h-8 w-8 text-gray-400" />
                       </div>
-                      <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-4 line-clamp-2">{agent.description}</p>
-                      <div className="flex items-center justify-between space-x-2">
-                        <div className="flex items-center text-xs sm:text-sm text-gray-500">
-                          <Users className="h-4 w-4 mr-1" />
-                          {agent.subscribers || 0} Subscribers
-                        </div>
-                        <div className="flex space-x-2">
-                          <button className="px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg text-xs sm:text-sm font-medium">
-                            View Agent
-                          </button>
-                          <button className="px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:shadow-lg text-xs sm:text-sm font-medium">
-                            Hire Agent
-                          </button>
-                        </div>
-                      </div>
+                    )}
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">{agent.name}</h3>
+                    <p className="text-sm text-gray-600 mb-0 line-clamp-4 text-center">{agent.description ? (agent.description.length > 200 ? agent.description.slice(0, 200) + '...' : agent.description) : 'No description provided'}</p>
+                    <div className="mt-2 text-base font-bold text-blue-600 text-center">
+                      {(!agent.Cost || agent.Cost === 0) ? 'Free' : `$${agent.Cost}`}
                     </div>
                   </div>
                 ))}

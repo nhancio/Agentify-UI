@@ -15,6 +15,7 @@ import Settings from './pages/Settings';
 import Billing from './pages/Billing';
 import AdminDashboard from './pages/AdminDashboard';
 import BlogPost from './pages/BlogPost';
+import Profile from './pages/Profile';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -66,28 +67,48 @@ function AppRoutes() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Landing />} />
-        <Route 
-          path="/login" 
+        <Route
+          path="/login"
           element={
             <PublicRoute>
               <Login />
             </PublicRoute>
-          } 
+          }
         />
-        <Route 
-          path="/signup" 
+        <Route
+          path="/signup"
           element={
             <PublicRoute>
               <Signup />
             </PublicRoute>
-          } 
+          }
         />
-        <Route 
-          path="/marketplace" 
-          element={<Marketplace />} 
+        {/* Protected Routes */}
+        <Route
+          path="/marketplace"
+          element={
+            <ProtectedRoute>
+              <Marketplace />
+            </ProtectedRoute>
+          }
         />
-        {/* All sidebar-linked routes are now public */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        {/* All sidebar-linked routes are now public except those above */}
         <Route path="/builder" element={<AgentBuilder />} />
         <Route path="/voice-agents" element={<VoiceAgents />} />
         <Route path="/video-agents" element={<VideoAgents />} />
@@ -96,13 +117,13 @@ function AppRoutes() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/billing" element={<Billing />} />
         {/* Admin Route can remain protected if needed */}
-        <Route 
-          path="/admin" 
+        <Route
+          path="/admin"
           element={
             <ProtectedRoute>
               <AdminDashboard />
             </ProtectedRoute>
-          } 
+          }
         />
         <Route path="/blog/:slug" element={<BlogPost />} />
         {/* Catch all route */}
