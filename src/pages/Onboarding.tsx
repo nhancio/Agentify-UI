@@ -5,11 +5,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
 const countryCodes = [
-  { code: '+1', label: '🇺🇸 US' },
-  { code: '+91', label: '🇮🇳 IN' },
-  { code: '+44', label: '🇬🇧 UK' },
-  { code: '+61', label: '🇦🇺 AU' },
-  { code: '+81', label: '🇯🇵 JP' },
+  { code: '+1', label: 'US' },
+  { code: '+91', label: 'IN' },
+  { code: '+44', label: 'UK' },
+  { code: '+61', label: 'AU' },
+  { code: '+81', label: 'JP' },
 ];
 
 const Onboarding: React.FC = () => {
@@ -17,9 +17,7 @@ const Onboarding: React.FC = () => {
   const [form, setForm] = useState({
     country_code: '+1',
     mobile_number: '',
-    referral_source: '',
-    company: '',
-    plan: ''
+    company: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -61,9 +59,7 @@ const Onboarding: React.FC = () => {
         id: user.id,
         email: user.email,
         mobile_number: fullPhoneNumber,
-        referral_source: form.referral_source,
-        company: form.company,
-        plan: form.plan
+        company: form.company
       });
 
       if (error) throw error;
@@ -120,25 +116,7 @@ const Onboarding: React.FC = () => {
                 />
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Where did you hear about us?</label>
-              <select
-                name="referral_source"
-                value={form.referral_source}
-                onChange={handleChange}
-                className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              >
-                <option value="">Select an option</option>
-                <option value="Google">Google</option>
-                <option value="Facebook">Facebook</option>
-                <option value="LinkedIn">LinkedIn</option>
-                <option value="Twitter">Twitter</option>
-                <option value="Instagram">Instagram</option>
-                <option value="Friend">Friend</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+            {/* Removed referral_source and plan fields */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
               <div className="relative">
@@ -153,21 +131,6 @@ const Onboarding: React.FC = () => {
                   required
                 />
               </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Plan</label>
-              <select
-                name="plan"
-                value={form.plan}
-                onChange={handleChange}
-                className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              >
-                <option value="">Select a plan</option>
-                <option value="starter">Starter</option>
-                <option value="professional">Professional</option>
-                <option value="custom">Custom</option>
-              </select>
             </div>
             <button
               type="submit"
