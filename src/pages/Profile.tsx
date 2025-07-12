@@ -74,9 +74,9 @@ const Profile: React.FC = () => {
               className="text-lg font-semibold text-gradient mb-2"
             />
             <div className="text-gray-500 mb-2">{googleProfile?.email || profile?.email}</div>
-            <span className="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-4 py-1 rounded-full mb-4 shadow">Premium Plan</span>
             <AnimatedButton size="md" className="w-full mt-2" icon={<Edit className="w-4 h-4" />}>Edit Profile</AnimatedButton>
             <AnimatedButton size="md" variant="secondary" className="w-full mt-2" icon={<LogOut className="w-4 h-4" />} onClick={signOut}>Sign Out</AnimatedButton>
+            <AnimatedButton size="md" variant="secondary" className="w-full mt-2">Support</AnimatedButton>
           </div>
 
           {/* Main Widgets Column */}
@@ -164,6 +164,7 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Quick Actions Widget */}
+            {/*
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-center justify-between gap-6 mt-2">
               <div className="flex flex-col gap-2 w-full md:w-auto">
                 <AnimatedButton size="md" showArrow className="w-full md:w-auto">Invite Team</AnimatedButton>
@@ -174,6 +175,7 @@ const Profile: React.FC = () => {
                 <AnimatedButton size="md" variant="secondary" className="w-full md:w-auto">Support</AnimatedButton>
               </div>
             </div>
+            */}
           </div>
         </div>
         {loading && (

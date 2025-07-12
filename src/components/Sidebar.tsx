@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Bot, 
-  Store, 
-  BarChart3, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Bot,
+  Store,
+  BarChart3,
+  Settings,
   CreditCard,
   Users,
   Phone,
@@ -25,10 +25,10 @@ import { useAuth } from '../contexts/AuthContext';
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Marketplace', href: '/marketplace', icon: Store },
+  { name: 'My Agents', href: '/voice-agents', icon: Mic },
+  { name: 'Voice Call History', href: '/calls', icon: Phone },
   { name: 'My Video Agents', href: '/my-video-agents', icon: Users },
   { name: 'Video Call History', href: '/video-agents', icon: Video },
-  { name: 'My Voice Agents', href: '/voice-agents', icon: Mic },
-  { name: 'Voice Call History', href: '/calls', icon: Phone },
 ];
 
 interface SidebarProps {
@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
   const toggleTheme = () => {
     const newTheme = !isDark;
     setIsDark(newTheme);
-    
+
     if (newTheme) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -81,17 +81,15 @@ const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 group ${
-                    isActive
-                      ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400'
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
-                  }`}
+                  className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 group ${isActive
+                    ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
+                    }`}
                 >
-                  <item.icon className={`mr-3 h-5 w-5 transition-colors duration-300 ${
-                    isActive 
-                      ? 'text-blue-600 dark:text-blue-400' 
-                      : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'
-                  }`} />
+                  <item.icon className={`mr-3 h-5 w-5 transition-colors duration-300 ${isActive
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'
+                    }`} />
                   {item.name}
                 </Link>
               );
@@ -100,7 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
 
           {/* User Profile - direct navigation to /profile */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div 
+            <div
               className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 p-4 rounded-lg transition-colors duration-300 cursor-pointer relative"
               onClick={() => navigate('/profile')}
             >
@@ -135,16 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
                 </div>
               </div>
             </div>
-            <button
-              className="mt-4 w-full flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-medium"
-              onClick={async () => {
-                await signOut();
-                navigate('/');
-              }}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </button>
+
           </div>
         </div>
       </div>

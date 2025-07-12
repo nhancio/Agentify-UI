@@ -32,7 +32,7 @@ const Dashboard: React.FC = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 flex flex-col items-center">
             <Mic className="h-8 w-8 text-blue-600 mb-2" />
             <div className="text-2xl font-bold">{voiceAgentsCount !== null ? voiceAgentsCount : '...'}</div>
-            <div className="text-gray-600 mt-1">My Voice Agents</div>
+            <div className="text-gray-600 mt-1">My Agents</div>
           </div>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 flex flex-col items-center">
             <Video className="h-8 w-8 text-purple-600 mb-2" />

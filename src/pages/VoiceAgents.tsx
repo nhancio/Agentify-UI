@@ -7,7 +7,6 @@ import {
   Play,
   Pause,
   Settings,
-  Plus,
   BarChart3,
   Users,
   Clock,
@@ -101,20 +100,13 @@ const VoiceAgents: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                My Voice Agents
+                My Agents
                 <span className="ml-3 text-base font-normal text-blue-600 align-middle">
                   ({agents.length})
                 </span>
               </h1>
-              <p className="text-gray-600">Manage your voice agents for phone calls and customer interactions.</p>
+              <p className="text-gray-600">Manage your agents for phone calls and customer interactions.</p>
             </div>
-            <button
-              onClick={() => setShowBuilder(true)}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all flex items-center"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Create Audio Agent
-            </button>
           </div>
         </div>
         {error && <div className="text-center text-red-600">{error}</div>}
