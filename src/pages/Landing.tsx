@@ -35,7 +35,6 @@ import {
   Monitor,
   MessageSquare
 } from 'lucide-react';
-import { billingService } from '../lib/api';
 
 const WORDPRESS_API_URL = 'https://public-api.wordpress.com/rest/v1.1/sites/agentlybotblogs.wordpress.com/posts/';
 
@@ -239,21 +238,6 @@ const Landing: React.FC = () => {
       badge: 'Best Value'
     }
   ];
-
-  const handleGetStarted = async (plan: string) => {
-    try {
-      // Use your real Stripe price ID for all plans (or map as needed)
-      const priceId = 'price_1Redc3SIdRlp7sMxv5SEWvjy';
-      const session = await billingService.createCheckoutSession(priceId);
-      if (session?.url) {
-        window.location.href = session.url;
-      } else {
-        alert('Unable to start checkout. Please contact support.');
-      }
-    } catch (err) {
-      alert('Unable to start checkout. Please contact support.');
-    }
-  };
 
   // Helper to slugify use case titles
   const slugify = (str: string) =>
@@ -656,7 +640,7 @@ const Landing: React.FC = () => {
                     </ul>
                     <button
                       className={`w-full ${plan.highlighted ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'border border-white text-white'} px-6 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors`}
-                      onClick={() => handleGetStarted(plan.name)}
+                      onClick={() => alert('Checkout integration coming soon!')}
                     >
                       Get Started
                     </button>
