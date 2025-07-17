@@ -36,48 +36,43 @@ const Marketplace: React.FC = () => {
   const AgentCard = ({ agent }: { agent: any }) => (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all group w-full">
       <div className="p-6">
+        {/* Image */}
         <div className="flex items-center justify-between mb-4">
           {agent.image ? (
-            <img src={agent.image} alt={agent.name} className="w-16 h-16 object-cover rounded-full" />
+            <img src={agent.image} alt={agent["Name"]} className="w-16 h-16 object-cover rounded-full" />
           ) : (
             <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-100">
               <Users className="h-8 w-8 text-gray-400" />
             </div>
           )}
-          <div className="flex items-center space-x-1">
-            <Star className="h-4 w-4 text-yellow-400 fill-current" />
-            <span className="text-sm font-medium text-gray-700">{agent.rating || '--'}</span>
-          </div>
         </div>
 
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{agent.name}</h3>
+        {/* Name */}
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{agent["Name"]}</h3>
 
-        {agent.partner && (
-          <div className="flex items-center mb-2">
-            <Building2 className="h-3 w-3 text-blue-500 mr-1" />
-            <span className="text-xs text-blue-600 font-medium">{agent.partner}</span>
-          </div>
-        )}
-
+        {/* Description */}
         <p className="text-sm text-gray-600 mb-3 line-clamp-3">
           {agent.description}
         </p>
 
-        <div className="flex flex-wrap gap-1 mb-4">
-          {(agent.features || []).map((feature: string, index: number) => (
-            <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
-              {feature}
-            </span>
-          ))}
+        {/* Credits and Subscribers */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-blue-700 font-medium">{agent.credits ?? '--'} credits/run</span>
+          <span className="text-gray-500 text-sm">{agent["no.of_subscribers"] ?? 0} subscribers</span>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="text-lg font-bold text-blue-600">
-            ${agent.cost || '--'}/month
-          </div>
-          <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all text-sm font-medium">
-            Deploy Agent
-          </button>
+        {/* Tag and Type as labels */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {agent.tag && (
+            <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
+              {agent.tag}
+            </span>
+          )}
+          {agent.type && (
+            <span className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded-full">
+              {agent.type}
+            </span>
+          )}
         </div>
       </div>
     </div>
