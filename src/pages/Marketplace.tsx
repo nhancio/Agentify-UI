@@ -9,105 +9,12 @@ const Marketplace: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'nhancio' | 'partner' | 'all'>('nhancio');
 
-  // Sample Nhancio Agents data
-  const nhancioAgents = [
-    {
-      id: 'nhancio-1',
-      name: 'Customer Support Agent',
-      description: 'Advanced AI agent specialized in handling customer inquiries, troubleshooting, and providing personalized support solutions.',
-      image: 'https://api.dicebear.com/7.x/bottts/svg?seed=customer-support',
-      cost: 29.99,
-      category: 'nhancio',
-      features: ['24/7 Support', 'Multi-language', 'Ticket Management'],
-      rating: 4.8
-    },
-    {
-      id: 'nhancio-2',
-      name: 'Sales Assistant',
-      description: 'Intelligent sales agent that qualifies leads, handles objections, and guides prospects through the sales funnel.',
-      image: 'https://api.dicebear.com/7.x/bottts/svg?seed=sales-assistant',
-      cost: 39.99,
-      category: 'nhancio',
-      features: ['Lead Qualification', 'CRM Integration', 'Follow-up Automation'],
-      rating: 4.9
-    },
-    {
-      id: 'nhancio-3',
-      name: 'Data Analyst Agent',
-      description: 'AI-powered data analyst that processes complex datasets, generates insights, and creates comprehensive reports.',
-      image: 'https://api.dicebear.com/7.x/bottts/svg?seed=data-analyst',
-      cost: 49.99,
-      category: 'nhancio',
-      features: ['Real-time Analytics', 'Custom Dashboards', 'Predictive Modeling'],
-      rating: 4.7
-    },
-    {
-      id: 'nhancio-4',
-      name: 'HR Recruiter',
-      description: 'Smart recruitment agent that screens candidates, schedules interviews, and manages the hiring process.',
-      image: 'https://api.dicebear.com/7.x/bottts/svg?seed=hr-recruiter',
-      cost: 34.99,
-      category: 'nhancio',
-      features: ['Resume Screening', 'Interview Scheduling', 'Candidate Tracking'],
-      rating: 4.6
-    }
-  ];
-
-  // Sample Partner Agents data
-  const partnerAgents = [
-    {
-      id: 'partner-1',
-      name: 'Marketing Specialist',
-      description: 'Expert marketing agent from our partner network, specializing in digital marketing campaigns and brand strategy.',
-      image: 'https://api.dicebear.com/7.x/bottts/svg?seed=marketing-specialist',
-      cost: 44.99,
-      category: 'partner',
-      features: ['Campaign Management', 'SEO Optimization', 'Social Media'],
-      rating: 4.8,
-      partner: 'Digital Marketing Pro'
-    },
-    {
-      id: 'partner-2',
-      name: 'Legal Assistant',
-      description: 'Professional legal assistant agent that helps with document review, contract analysis, and legal research.',
-      image: 'https://api.dicebear.com/7.x/bottts/svg?seed=legal-assistant',
-      cost: 59.99,
-      category: 'partner',
-      features: ['Document Review', 'Contract Analysis', 'Legal Research'],
-      rating: 4.9,
-      partner: 'LegalTech Solutions'
-    },
-    {
-      id: 'partner-3',
-      name: 'Financial Advisor',
-      description: 'Certified financial advisor agent providing investment advice, portfolio analysis, and financial planning.',
-      image: 'https://api.dicebear.com/7.x/bottts/svg?seed=financial-advisor',
-      cost: 54.99,
-      category: 'partner',
-      features: ['Investment Advice', 'Portfolio Analysis', 'Financial Planning'],
-      rating: 4.7,
-      partner: 'FinanceAI Partners'
-    },
-    {
-      id: 'partner-4',
-      name: 'Healthcare Assistant',
-      description: 'Medical assistant agent that helps with patient scheduling, health information, and basic medical queries.',
-      image: 'https://api.dicebear.com/7.x/bottts/svg?seed=healthcare-assistant',
-      cost: 49.99,
-      category: 'partner',
-      features: ['Patient Scheduling', 'Health Information', 'Medical Queries'],
-      rating: 4.8,
-      partner: 'HealthTech Innovations'
-    }
-  ];
-
   // Fetch agents from Supabase
   useEffect(() => {
     const fetchAgents = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Fetch from Supabase 'agents' table
         const { data, error } = await supabase.from('agents').select('*');
         if (error) throw error;
         setAgents(data || []);
@@ -122,16 +29,8 @@ const Marketplace: React.FC = () => {
   }, []);
 
   const getCurrentAgents = () => {
-    switch (activeTab) {
-      case 'nhancio':
-        return nhancioAgents;
-      case 'partner':
-        return partnerAgents;
-      case 'all':
-        return [...nhancioAgents, ...partnerAgents];
-      default:
-        return nhancioAgents;
-    }
+    if (activeTab === 'all') return agents;
+    return agents.filter(agent => agent.category === activeTab);
   };
 
   const AgentCard = ({ agent }: { agent: any }) => (
@@ -147,7 +46,7 @@ const Marketplace: React.FC = () => {
           )}
           <div className="flex items-center space-x-1">
             <Star className="h-4 w-4 text-yellow-400 fill-current" />
-            <span className="text-sm font-medium text-gray-700">{agent.rating}</span>
+            <span className="text-sm font-medium text-gray-700">{agent.rating || '--'}</span>
           </div>
         </div>
 
@@ -165,7 +64,7 @@ const Marketplace: React.FC = () => {
         </p>
 
         <div className="flex flex-wrap gap-1 mb-4">
-          {agent.features.map((feature: string, index: number) => (
+          {(agent.features || []).map((feature: string, index: number) => (
             <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
               {feature}
             </span>
@@ -174,7 +73,7 @@ const Marketplace: React.FC = () => {
 
         <div className="flex items-center justify-between">
           <div className="text-lg font-bold text-blue-600">
-            ${agent.cost}/month
+            ${agent.cost || '--'}/month
           </div>
           <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all text-sm font-medium">
             Deploy Agent
@@ -200,8 +99,8 @@ const Marketplace: React.FC = () => {
             <button
               onClick={() => setActiveTab('nhancio')}
               className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'nhancio'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
               <Sparkles className="h-4 w-4 mr-2" />
@@ -210,8 +109,8 @@ const Marketplace: React.FC = () => {
             <button
               onClick={() => setActiveTab('partner')}
               className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'partner'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
               <Building2 className="h-4 w-4 mr-2" />
@@ -220,8 +119,8 @@ const Marketplace: React.FC = () => {
             <button
               onClick={() => setActiveTab('all')}
               className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'all'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
               <Users className="h-4 w-4 mr-2" />

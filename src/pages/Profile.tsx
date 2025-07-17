@@ -20,32 +20,42 @@ const mockStats = [
 ];
 
 const Profile: React.FC = () => {
-  const { user, googleProfile, signOut } = useAuth();
+  const { user, googleProfile, signOut, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user) {
-        setProfile(null);
+    if (!authLoading && user) {
+      const fetchProfile = async () => {
+        setLoading(true);
+        setError('');
+        try {
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+          if (!error && data) {
+            setProfile(data);
+          } else {
+            setProfile(null);
+            setError('Profile not found');
+          }
+        } catch (err) {
+          setProfile(null);
+          setError('Failed to load profile');
+        }
         setLoading(false);
-        return;
-      }
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      if (!error && data) {
-        setProfile(data);
-      } else {
-        setProfile(null);
-      }
-      setLoading(false);
-    };
-    fetchProfile();
-  }, [user]);
+      };
+      fetchProfile();
+    }
+  }, [user, authLoading]);
+
+  if (authLoading) return <div>Loading...</div>;
+  if (!user) return <div>Please log in</div>;
+  if (loading) return <div>Loading profile...</div>;
+  if (error) return <div className="text-red-600 text-center">{error}</div>;
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-white dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 relative overflow-x-hidden">
@@ -178,14 +188,6 @@ const Profile: React.FC = () => {
             */}
           </div>
         </div>
-        {loading && (
-          <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4" />
-              <div className="text-gray-600">Loading profile...</div>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );

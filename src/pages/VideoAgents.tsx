@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { tavusService, ISO_TO_LANGUAGE } from '../lib/tavus';
 import { agentService } from '../lib/api';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const VideoAgents: React.FC = () => {
   const [personas, setPersonas] = useState<any[]>([]);
@@ -24,10 +26,10 @@ const VideoAgents: React.FC = () => {
   const [error, setError] = useState('');
   const [showSetup, setShowSetup] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
 
+  // Move fetchData outside useEffect so it can be used for Refresh
   const fetchData = async () => {
     setLoading(true);
     setError('');
@@ -41,13 +43,18 @@ const VideoAgents: React.FC = () => {
       setPersonas(personaResult.personas || []);
       setReplicas(replicaResult.replicas || []);
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch Tavus data');
+      setError(err.message || 'Failed to load data');
       setPersonas([]);
       setReplicas([]);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      fetchData();
+    }
+  }, [user, authLoading]);
 
   const getThumbnail = (persona: any) => {
     if (!persona.default_replica_id) return undefined;
@@ -67,7 +74,7 @@ const VideoAgents: React.FC = () => {
     return noContext.length > 200 ? noContext.slice(0, 200) + '...' : noContext;
   };
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="flex">
         <Sidebar />
@@ -79,6 +86,11 @@ const VideoAgents: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  if (!user) {
+    // Optionally redirect to login
+    return <div>Please log in</div>;
   }
 
   return (
@@ -100,7 +112,7 @@ const VideoAgents: React.FC = () => {
             </button>
           </div>
         </div>
-        {error && <div className="text-center text-red-600">{error}</div>}
+        {error && <div className="text-red-600 text-center">{error}</div>}
         {personas.length === 0 ? (
           <div className="p-12 text-center">
             <Camera className="h-12 w-12 text-gray-400 mx-auto mb-4" />
