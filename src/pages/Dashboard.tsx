@@ -2,26 +2,49 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import { Mic, Video, Phone } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
+  const { user, loading: authLoading } = useAuth();
   const [voiceAgentsCount, setVoiceAgentsCount] = useState<number | null>(null);
   const [videoAgentsCount, setVideoAgentsCount] = useState<number | null>(null);
   const [callRecordsCount, setCallRecordsCount] = useState<number | null>(null);
   const [videoCallRecordsCount, setVideoCallRecordsCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchCounts = async () => {
-      const { count: voiceCount } = await supabase.from('voice_agents').select('*', { count: 'exact', head: true });
-      const { count: videoCount } = await supabase.from('video_agents').select('*', { count: 'exact', head: true });
-      const { count: callCount } = await supabase.from('call_records').select('*', { count: 'exact', head: true });
-      const { count: videoCallCount } = await supabase.from('video_call_records').select('*', { count: 'exact', head: true });
-      setVoiceAgentsCount(voiceCount ?? 0);
-      setVideoAgentsCount(videoCount ?? 0);
-      setCallRecordsCount(callCount ?? 0);
-      setVideoCallRecordsCount(videoCallCount ?? 0);
-    };
-    fetchCounts();
-  }, []);
+    if (!authLoading && user) {
+      const fetchCounts = async () => {
+        setLoading(true);
+        setError('');
+        try {
+          const { count: voiceCount, error: voiceError } = await supabase.from('voice_agents').select('*', { count: 'exact', head: true });
+          const { count: videoCount, error: videoError } = await supabase.from('video_agents').select('*', { count: 'exact', head: true });
+          const { count: callCount, error: callError } = await supabase.from('call_records').select('*', { count: 'exact', head: true });
+          const { count: videoCallCount, error: videoCallError } = await supabase.from('video_call_records').select('*', { count: 'exact', head: true });
+
+          if (voiceError || videoError || callError || videoCallError) {
+            throw new Error('Failed to fetch one or more counts');
+          }
+
+          setVoiceAgentsCount(voiceCount ?? 0);
+          setVideoAgentsCount(videoCount ?? 0);
+          setCallRecordsCount(callCount ?? 0);
+          setVideoCallRecordsCount(videoCallCount ?? 0);
+        } catch (err) {
+          setError('Failed to load dashboard data');
+        }
+        setLoading(false);
+      };
+      fetchCounts();
+    }
+  }, [user, authLoading]);
+
+  if (authLoading) return <div>Loading...</div>;
+  if (!user) return <div>Please log in</div>;
+  if (loading) return <div>Loading dashboard...</div>;
+  if (error) return <div className="text-red-600 text-center">{error}</div>;
 
   return (
     <div className="flex">

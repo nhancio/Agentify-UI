@@ -30,14 +30,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log('[AuthContext] onAuthStateChange:', session);
       setUser(session?.user ?? null);
       await checkUserRow(session?.user ?? null);
     });
 
     // On mount, get current session
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-      checkUserRow(data.session?.user ?? null);
+    supabase.auth.getSession().then(({ data, error }) => {
+      console.log('[AuthContext] getSession on mount:', data?.session, error);
+      setUser(data?.session?.user ?? null);
+      checkUserRow(data?.session?.user ?? null);
+      setLoading(false);
+    }).catch((err) => {
+      console.error('[AuthContext] Error restoring session:', err);
+      setUser(null);
+      setLoading(false);
     });
 
     return () => {
