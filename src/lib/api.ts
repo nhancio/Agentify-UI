@@ -1,5 +1,4 @@
 import { supabase } from './supabase';
-import type { Agent, Call, Lead, AgentTemplate } from './supabase';
 
 // Add ElevenLabs API integration
 const ELEVENLABS_API_URL = 'https://api.elevenlabs.io/v1/convai/agents/create';
@@ -38,7 +37,7 @@ export const agentService = {
   },
 
   // Create new agent (also creates in ElevenLabs)
-  async createAgent(agent: Omit<Agent, 'id' | 'created_at' | 'updated_at'>) {
+  async createAgent(agent: any) {
     // 1. Create agent in ElevenLabs
     // You may want to map your agent fields to ElevenLabs config here
     const conversationConfig = agent.conversation_config || {};
@@ -60,7 +59,7 @@ export const agentService = {
   },
 
   // Update agent
-  async updateAgent(id: string, updates: Partial<Agent>) {
+  async updateAgent(id: string, updates: any) {
     const { data, error } = await supabase
       .from('agents')
       .update(updates)
@@ -97,7 +96,7 @@ export const callService = {
   // Get calls for user's agents
   async getCalls(agentId?: string) {
     let query = supabase
-      .from('calls')
+      .from('call_logs') // Updated to use consistent table name
       .select(`
         *,
         agents(name, user_id)
@@ -116,7 +115,7 @@ export const callService = {
   // Get call details
   async getCall(id: string) {
     const { data, error } = await supabase
-      .from('calls')
+      .from('call_logs') // Updated to use consistent table name
       .select(`
         *,
         agents(name, user_id)

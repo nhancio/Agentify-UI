@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Users, 
-  Bot, 
-  Phone, 
-  DollarSign, 
-  TrendingUp, 
+import {
+  Users,
+  Bot,
+  Phone,
+  DollarSign,
+  TrendingUp,
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -26,8 +26,8 @@ const AdminDashboard: React.FC = () => {
     newUsersToday: 0,
     callsToday: 0
   });
-  const [users, setUsers] = useState([]);
-  const [agents, setAgents] = useState([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -41,7 +41,7 @@ const AdminDashboard: React.FC = () => {
       const [usersData, agentsData, callsData] = await Promise.all([
         supabase.from('profiles').select('*'),
         supabase.from('agents').select('*'),
-        supabase.from('calls').select('*') // change to 'call_logs' if that's your table
+        supabase.from('call_logs').select('*') // Updated to use correct table name
       ]);
 
       setStats({
@@ -49,10 +49,10 @@ const AdminDashboard: React.FC = () => {
         activeAgents: agentsData.data?.filter(a => a.status === 'active').length || 0,
         totalCalls: callsData.data?.length || 0,
         monthlyRevenue: 12450, // Mock data
-        newUsersToday: usersData.data?.filter(u => 
+        newUsersToday: usersData.data?.filter(u =>
           new Date(u.created_at).toDateString() === new Date().toDateString()
         ).length || 0,
-        callsToday: callsData.data?.filter(c => 
+        callsToday: callsData.data?.filter(c =>
           new Date(c.created_at).toDateString() === new Date().toDateString()
         ).length || 0
       });
@@ -152,11 +152,10 @@ const AdminDashboard: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
+                className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
               >
                 <tab.icon className="h-4 w-4 mr-2" />
                 {tab.label}
@@ -257,7 +256,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
@@ -299,11 +298,10 @@ const AdminDashboard: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.subscription_plan === 'premium' ? 'bg-purple-100 text-purple-800' :
+                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${user.subscription_plan === 'premium' ? 'bg-purple-100 text-purple-800' :
                           user.subscription_plan === 'pro' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                            'bg-gray-100 text-gray-800'
+                          }`}>
                           {user.subscription_plan}
                         </span>
                       </td>

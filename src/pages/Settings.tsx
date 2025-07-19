@@ -1,21 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import { 
-  User, 
-  Bell, 
-  Shield, 
-  CreditCard, 
-  Globe, 
-  Smartphone,
-  Mail,
-  Phone,
-  Lock,
-  Key,
-  Trash2,
-  Plus,
-  CheckCircle,
-  AlertTriangle
-} from 'lucide-react';
+import { User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -27,41 +12,6 @@ const Settings: React.FC = () => {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'security', label: 'Security', icon: Shield },
-    { id: 'billing', label: 'Billing', icon: CreditCard },
-    { id: 'integrations', label: 'Integrations', icon: Globe }
-  ];
-
-  const integrations = [
-    {
-      name: 'Twilio',
-      description: 'Voice calling and SMS services',
-      status: 'connected',
-      icon: Phone,
-      lastSync: '2 minutes ago'
-    },
-    {
-      name: 'Google Calendar',
-      description: 'Appointment scheduling and calendar sync',
-      status: 'connected',
-      icon: Globe,
-      lastSync: '1 hour ago'
-    },
-    {
-      name: 'Slack',
-      description: 'Team notifications and alerts',
-      status: 'disconnected',
-      icon: Globe,
-      lastSync: 'Never'
-    },
-    {
-      name: 'Salesforce',
-      description: 'CRM integration for lead management',
-      status: 'disconnected',
-      icon: Globe,
-      lastSync: 'Never'
-    }
   ];
 
   useEffect(() => {
@@ -107,11 +57,10 @@ const Settings: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                      activeTab === tab.id
+                    className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id
                         ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 border-r-2 border-blue-600'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
+                      }`}
                   >
                     <tab.icon className={`mr-3 h-5 w-5 ${activeTab === tab.id ? 'text-blue-600' : 'text-gray-400'}`} />
                     {tab.label}
@@ -211,7 +160,7 @@ const Settings: React.FC = () => {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Email Notifications</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -223,7 +172,7 @@ const Settings: React.FC = () => {
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                       </label>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="font-medium text-gray-900">Performance Reports</div>
@@ -234,7 +183,7 @@ const Settings: React.FC = () => {
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                       </label>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="font-medium text-gray-900">System Updates</div>
@@ -250,7 +199,7 @@ const Settings: React.FC = () => {
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Push Notifications</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -262,7 +211,7 @@ const Settings: React.FC = () => {
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                       </label>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="font-medium text-gray-900">Agent Errors</div>
@@ -283,7 +232,7 @@ const Settings: React.FC = () => {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h3>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
@@ -317,14 +266,11 @@ const Settings: React.FC = () => {
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Two-Factor Authentication</h3>
-                  
+
                   <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
                     <div className="flex items-center">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
-                      <div>
-                        <div className="font-medium text-green-900">2FA is enabled</div>
-                        <div className="text-sm text-green-700">Your account is protected with two-factor authentication</div>
-                      </div>
+                      <div className="font-medium text-green-900">2FA is enabled</div>
+                      <div className="text-sm text-green-700">Your account is protected with two-factor authentication</div>
                     </div>
                     <button className="text-red-600 hover:text-red-700 font-medium">
                       Disable
@@ -334,15 +280,12 @@ const Settings: React.FC = () => {
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">API Keys</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                       <div className="flex items-center">
-                        <Key className="h-5 w-5 text-gray-400 mr-3" />
-                        <div>
-                          <div className="font-medium text-gray-900">Production API Key</div>
-                          <div className="text-sm text-gray-500">vg_prod_•••••••••••••••••••••••••••••</div>
-                        </div>
+                        <div className="font-medium text-gray-900">Production API Key</div>
+                        <div className="text-sm text-gray-500">vg_prod_•••••••••••••••••••••••••••••</div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
@@ -353,9 +296,8 @@ const Settings: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    
+
                     <button className="flex items-center text-blue-600 hover:text-blue-700 font-medium">
-                      <Plus className="h-4 w-4 mr-2" />
                       Generate New API Key
                     </button>
                   </div>
@@ -368,45 +310,10 @@ const Settings: React.FC = () => {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Connected Services</h3>
-                  
+
                   <div className="space-y-4">
-                    {integrations.map((integration, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                        <div className="flex items-center">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            integration.status === 'connected' ? 'bg-green-100' : 'bg-gray-100'
-                          }`}>
-                            <integration.icon className={`h-5 w-5 ${
-                              integration.status === 'connected' ? 'text-green-600' : 'text-gray-400'
-                            }`} />
-                          </div>
-                          <div className="ml-3">
-                            <div className="font-medium text-gray-900">{integration.name}</div>
-                            <div className="text-sm text-gray-500">{integration.description}</div>
-                            <div className="text-xs text-gray-400">Last sync: {integration.lastSync}</div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                            integration.status === 'connected'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-600'
-                          }`}>
-                            {integration.status}
-                          </span>
-                          {integration.status === 'connected' ? (
-                            <button className="text-red-600 hover:text-red-700 text-sm font-medium">
-                              Disconnect
-                            </button>
-                          ) : (
-                            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                              Connect
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                    {/* The integrations array was removed, so this section will be empty or need to be re-evaluated */}
+                    {/* For now, we'll keep the structure but it will be empty */}
                   </div>
                 </div>
               </div>

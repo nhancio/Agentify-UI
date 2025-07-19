@@ -3,6 +3,7 @@ import { Play, Download, Eye, Search, Filter, Calendar, Phone } from 'lucide-rea
 import { supabase } from "../lib/supabase";
 
 export interface SupabaseCallLog {
+  id?: string; // Add id property
   userid: number;
   created_at: string;
   caller_id: string;
@@ -24,7 +25,7 @@ export const CallLogs: React.FC = () => {
     const fetchCallLogs = async () => {
       setLoading(true);
       const { data, error } = await supabase
-        .from('calls') // changed from 'call_logs'
+        .from('call_logs') // Updated to use consistent table name
         .select('*')
         .order('created_at', { ascending: false });
       if (error) {
@@ -55,8 +56,8 @@ export const CallLogs: React.FC = () => {
 
   // Filter logic (search by caller_id or from_number)
   const filteredLogs = callLogs.filter(log =>
-    (log.caller_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.from_number?.includes(searchTerm))
+  (log.caller_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    log.from_number?.includes(searchTerm))
   );
 
   const viewTranscript = (log: SupabaseCallLog) => {
@@ -193,7 +194,7 @@ export const CallLogs: React.FC = () => {
                         <Download className="w-4 h-4" />
                         <span>Download</span>
                       </button>
-                      <button 
+                      <button
                         onClick={() => viewTranscript(log)}
                         className="text-indigo-600 hover:text-indigo-900 inline-flex items-center space-x-1 transition-colors"
                       >

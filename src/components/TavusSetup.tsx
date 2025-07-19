@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
-  Loader2, 
-  Video, 
+import {
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Loader2,
+  Video,
   Upload,
   ExternalLink,
   RefreshCw,
@@ -34,10 +34,9 @@ const TavusSetup: React.FC = () => {
   const checkConnection = async () => {
     setConnectionStatus('checking');
     setError('');
-    
+
     try {
       const result = await tavusService.testConnection();
-      console.debug('[TavusSetup] testConnection:', result);
       if (!result.success) {
         setConnectionStatus('error');
         setError(result.message);
@@ -48,7 +47,6 @@ const TavusSetup: React.FC = () => {
     } catch (err) {
       setConnectionStatus('error');
       setError(err instanceof Error ? err.message : 'Connection failed');
-      console.error('[TavusSetup] Connection error:', err);
     }
   };
 
@@ -61,39 +59,23 @@ const TavusSetup: React.FC = () => {
         tavusService.getConversations(),
         tavusService.getAccountInfo()
       ]);
-      // Debug logs for all API responses
-      console.debug('[TavusSetup] Replicas:', replicasData);
-      console.debug('[TavusSetup] Personas:', personasData);
-      console.debug('[TavusSetup] Conversations:', conversationsData);
-      console.debug('[TavusSetup] Account Info:', accountData);
 
-      if (typeof window !== 'undefined') {
-        // @ts-ignore
-        window.tavusDebug = {
-          replicas: replicasData,
-          personas: personasData,
-          conversations: conversationsData,
-          account: accountData
-        };
-      }
-      
       if (replicasData.status === 'fulfilled') {
         setReplicas(replicasData.value.replicas || []);
       }
-      
+
       if (personasData.status === 'fulfilled') {
         setPersonas(personasData.value.personas || []);
       }
-      
+
       if (conversationsData.status === 'fulfilled') {
         setConversations(conversationsData.value.conversations || []);
       }
-      
+
       if (accountData.status === 'fulfilled') {
         setAccountInfo(accountData.value);
       }
     } catch (err) {
-      console.error('Error loading data:', err);
     } finally {
       setLoading(false);
     }
@@ -178,14 +160,13 @@ const TavusSetup: React.FC = () => {
             Refresh
           </button>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           {getStatusIcon()}
-          <span className={`font-medium ${
-            connectionStatus === 'connected' ? 'text-green-700' :
-            connectionStatus === 'error' ? 'text-red-700' :
-            'text-blue-700'
-          }`}>
+          <span className={`font-medium ${connectionStatus === 'connected' ? 'text-green-700' :
+              connectionStatus === 'error' ? 'text-red-700' :
+                'text-blue-700'
+            }`}>
             {getStatusMessage()}
           </span>
         </div>
@@ -258,11 +239,10 @@ const TavusSetup: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === tab.id
+                  className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   <tab.icon className="h-4 w-4 mr-2" />
                   {tab.label}
@@ -277,7 +257,7 @@ const TavusSetup: React.FC = () => {
             {activeTab === 'overview' && (
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Overview</h3>
-                
+
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <a
@@ -399,20 +379,19 @@ const TavusSetup: React.FC = () => {
                             </button>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center justify-between mb-2">
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                            replica.status === 'ready' ? 'bg-green-100 text-green-800' :
-                            replica.status === 'training' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${replica.status === 'ready' ? 'bg-green-100 text-green-800' :
+                              replica.status === 'training' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                            }`}>
                             {replica.status}
                           </span>
                           {replica.training_progress && replica.status === 'training' && (
                             <span className="text-xs text-gray-500">{replica.training_progress}%</span>
                           )}
                         </div>
-                        
+
                         <p className="text-xs text-gray-600 mb-2 font-mono">{replica.replica_id}</p>
                         <p className="text-xs text-gray-500">
                           Created: {new Date(replica.created_at).toLocaleDateString()}
@@ -505,11 +484,10 @@ const TavusSetup: React.FC = () => {
                       <div key={conversation.conversation_id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium text-gray-900">{conversation.conversation_name}</h4>
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                            conversation.status === 'completed' ? 'bg-green-100 text-green-800' :
-                            conversation.status === 'active' ? 'bg-blue-100 text-blue-800' :
-                            'bg-gray-100 text-gray-600'
-                          }`}>
+                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${conversation.status === 'completed' ? 'bg-green-100 text-green-800' :
+                              conversation.status === 'active' ? 'bg-blue-100 text-blue-800' :
+                                'bg-gray-100 text-gray-600'
+                            }`}>
                             {conversation.status}
                           </span>
                         </div>

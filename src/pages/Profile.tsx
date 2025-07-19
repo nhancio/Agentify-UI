@@ -52,9 +52,36 @@ const Profile: React.FC = () => {
     }
   }, [user, authLoading]);
 
-  if (authLoading) return <div>Loading...</div>;
-  if (!user) return <div>Please log in</div>;
-  if (loading) return <div>Loading profile...</div>;
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading authentication...</p>
+        </div>
+      </div>
+    );
+  }
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Please log in to view your profile</p>
+          <a href="/login" className="text-blue-600 hover:text-blue-800">Go to Login</a>
+        </div>
+      </div>
+    );
+  }
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
   if (error) return <div className="text-red-600 text-center">{error}</div>;
 
   return (

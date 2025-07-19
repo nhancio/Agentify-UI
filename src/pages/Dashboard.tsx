@@ -21,17 +21,17 @@ const Dashboard: React.FC = () => {
         try {
           const { count: voiceCount, error: voiceError } = await supabase.from('voice_agents').select('*', { count: 'exact', head: true });
           const { count: videoCount, error: videoError } = await supabase.from('video_agents').select('*', { count: 'exact', head: true });
-          const { count: callCount, error: callError } = await supabase.from('call_records').select('*', { count: 'exact', head: true });
-          const { count: videoCallCount, error: videoCallError } = await supabase.from('video_call_records').select('*', { count: 'exact', head: true });
+          const { count: callCount, error: callError } = await supabase.from('call_logs').select('*', { count: 'exact', head: true });
+          // Removed video_call_records query as table doesn't exist
 
-          if (voiceError || videoError || callError || videoCallError) {
+          if (voiceError || videoError || callError) {
             throw new Error('Failed to fetch one or more counts');
           }
 
           setVoiceAgentsCount(voiceCount ?? 0);
           setVideoAgentsCount(videoCount ?? 0);
           setCallRecordsCount(callCount ?? 0);
-          setVideoCallRecordsCount(videoCallCount ?? 0);
+          setVideoCallRecordsCount(0); // Set to 0 since table doesn't exist
         } catch (err) {
           setError('Failed to load dashboard data');
         }
@@ -41,10 +41,51 @@ const Dashboard: React.FC = () => {
     }
   }, [user, authLoading]);
 
-  if (authLoading) return <div>Loading...</div>;
-  if (!user) return <div>Please log in</div>;
-  if (loading) return <div>Loading dashboard...</div>;
-  if (error) return <div className="text-red-600 text-center">{error}</div>;
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading authentication...</p>
+        </div>
+      </div>
+    );
+  }
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Please log in to view your dashboard</p>
+          <a href="/login" className="text-blue-600 hover:text-blue-800">Go to Login</a>
+        </div>
+      </div>
+    );
+  }
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="text-blue-600 hover:text-blue-800"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex">

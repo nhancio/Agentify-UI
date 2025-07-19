@@ -18,6 +18,7 @@ import {
 import { agentService } from '../lib/api';
 import { voiceAgentService } from '../lib/voiceAgent';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 const VoiceAgents: React.FC = () => {
   const [agents, setAgents] = useState<any[]>([]);
@@ -35,24 +36,37 @@ const VoiceAgents: React.FC = () => {
   const [elAgentDetail, setElAgentDetail] = useState<any | null>(null);
   const [elLoading, setElLoading] = useState(false);
 
-  useEffect(() => {
-    fetchAgents();
-  }, []);
+  const { user } = useAuth();
 
   const fetchAgents = async () => {
     setLoading(true);
     setError('');
     try {
-      const { data, error } = await supabase.from('agents').select('*').eq('category', 'voice');
+      if (!user) {
+        setAgents([]);
+        setLoading(false);
+        return;
+      }
+      // Fetch subscriptions and join with agents
+      const { data, error } = await supabase
+        .from('user_agent_subscriptions')
+        .select('agent_id, agents(*)')
+        .eq('user_id', user.id);
       if (error) throw error;
-      setAgents(data || []);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch voice agents');
+      // Extract agent details from the joined result
+      const subscribedAgents = (data || []).map((row: any) => row.agents).filter(Boolean);
+      setAgents(subscribedAgents);
+    } catch (err) {
+      setError('Failed to fetch subscribed agents');
       setAgents([]);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchAgents();
+  }, [user]);
 
   const handleCreateAgent = () => {
     setSelectedAgent(null);
@@ -70,25 +84,8 @@ const VoiceAgents: React.FC = () => {
   };
 
   if (showBuilder) {
-    return (
-      <div className="flex">
-        <Sidebar />
-        <div className="ml-64 flex-1">
-          <div className="p-6 border-b border-gray-200 bg-white">
-            <button
-              onClick={() => setShowBuilder(false)}
-              className="text-blue-600 hover:text-blue-700 font-medium"
-            >
-              ← Back to Voice Agents
-            </button>
-          </div>
-          <VoiceAgentBuilder
-            agentId={selectedAgent?.id}
-            onSave={handleAgentSaved}
-          />
-        </div>
-      </div>
-    );
+    // Remove the builder UI and back button
+    return null;
   }
 
   return (
@@ -120,15 +117,15 @@ const VoiceAgents: React.FC = () => {
               {agents.map((agent) => (
                 <div key={agent.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all group w-full p-6 flex flex-col items-center">
                   {agent.avatar_url || agent.logo ? (
-                    <img src={agent.avatar_url || agent.logo} alt={agent.name} className="w-16 h-16 object-cover rounded-full mb-3" />
+                    <img src={agent.avatar_url || agent.logo} alt={agent.Name} className="w-16 h-16 object-cover rounded-full mb-3" />
                   ) : (
                     <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 mb-3">
                       <Users className="h-8 w-8 text-gray-400" />
                     </div>
                   )}
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center">{agent.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center">{agent.Name}</h3>
                   <div className="text-xs text-gray-500 mb-2 text-center">{agent.id}</div>
-                  <div className="text-sm text-gray-700 mb-1 text-center">{agent.creator || agent.created_by || 'Unknown Creator'}</div>
+                  <div className="text-sm text-gray-700 mb-1 text-center">{agent.description || 'No profile/description'}</div>
                   <div className="text-xs text-gray-400 text-center">{agent.created_at ? new Date(agent.created_at).toLocaleString() : ''}</div>
                 </div>
               ))}

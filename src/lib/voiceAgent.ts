@@ -1,5 +1,4 @@
 import { supabase } from './supabase';
-import type { Agent } from './supabase';
 
 export interface VoiceSettings {
   voice: string;
@@ -33,7 +32,7 @@ export interface VoiceAgentConfig {
 
 export const voiceAgentService = {
   // Create a new voice agent
-  async createVoiceAgent(config: VoiceAgentConfig): Promise<Agent> {
+  async createVoiceAgent(config: VoiceAgentConfig): Promise<any> {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) throw new Error('Not authenticated');
 
@@ -100,7 +99,7 @@ export const voiceAgentService = {
   // Get agent call history
   async getAgentCalls(agentId: string) {
     const { data, error } = await supabase
-      .from('calls')
+      .from('call_logs') // Updated to use consistent table name
       .select(`
         *,
         leads(*)
@@ -115,9 +114,9 @@ export const voiceAgentService = {
   // Get agent analytics
   async getAgentAnalytics(agentId: string, timeRange: string = '7d') {
     const { data, error } = await supabase
-      .rpc('get_agent_analytics', { 
-        agent_id: agentId, 
-        time_range: timeRange 
+      .rpc('get_agent_analytics', {
+        agent_id: agentId,
+        time_range: timeRange
       });
 
     if (error) throw error;

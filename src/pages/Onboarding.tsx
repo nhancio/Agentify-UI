@@ -13,7 +13,7 @@ const countryCodes = [
 ];
 
 const Onboarding: React.FC = () => {
-  const { user, setIsNewUser } = useAuth();
+  const { user, completeOnboarding } = useAuth();
   const [form, setForm] = useState({
     country_code: '+1',
     mobile_number: '',

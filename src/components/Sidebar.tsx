@@ -18,7 +18,9 @@ import {
   Shield,
   Globe,
   Key,
-  LogOut
+  LogOut,
+  LogIn,
+  UserPlus
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -31,32 +33,11 @@ const navigation = [
   { name: 'Video Call History', href: '/video-agents', icon: Video },
 ];
 
-interface SidebarProps {
-  profile?: any;
-  loading?: boolean;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
+const Sidebar: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // add useNavigate
-  const { googleProfile, signOut } = useAuth();
-  const [isDark, setIsDark] = React.useState(
-    document.documentElement.classList.contains('dark')
-  );
+  const navigate = useNavigate();
+  const { user, googleProfile } = useAuth();
   const [open, setOpen] = React.useState(false);
-
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
 
   return (
     <>
@@ -96,44 +77,62 @@ const Sidebar: React.FC<SidebarProps> = ({ profile, loading }) => {
             })}
           </nav>
 
-          {/* User Profile - direct navigation to /profile */}
+          {/* User Profile Section */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div
-              className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 p-4 rounded-lg transition-colors duration-300 cursor-pointer relative"
-              onClick={() => navigate('/profile')}
-            >
-              <div className="flex items-center">
-                {googleProfile?.avatar ? (
-                  <img
-                    src={googleProfile.avatar}
-                    alt={googleProfile.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                    onError={e => {
-                      // fallback to initials if image fails to load (e.g., 429 error)
-                      (e.target as HTMLImageElement).style.display = 'none';
-                      // Optionally, you could set a state to show initials instead
-                    }}
-                  />
-                ) : (
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-semibold text-sm">
-                      {googleProfile?.name
-                        ? googleProfile.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
-                        : 'JD'}
-                    </span>
+            {user ? (
+              // Logged in user
+              <div
+                className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 p-4 rounded-lg transition-colors duration-300 cursor-pointer relative"
+                onClick={() => navigate('/profile')}
+              >
+                <div className="flex items-center">
+                  {googleProfile?.avatar ? (
+                    <img
+                      src={googleProfile.avatar}
+                      alt={googleProfile.name}
+                      className="w-10 h-10 rounded-full object-cover"
+                      onError={e => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold text-sm">
+                        {googleProfile?.name
+                          ? googleProfile.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
+                          : 'JD'}
+                      </span>
+                    </div>
+                  )}
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {googleProfile?.name || 'John Doe'}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {googleProfile?.plan || googleProfile?.email || 'Premium Plan'}
+                    </p>
                   </div>
-                )}
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {googleProfile?.name || 'John Doe'}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {googleProfile?.plan || googleProfile?.email || 'Premium Plan'}
-                  </p>
                 </div>
               </div>
-            </div>
-
+            ) : (
+              // Non-logged in user
+              <div className="space-y-2">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Log In
+                </button>
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-all"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Sign Up
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

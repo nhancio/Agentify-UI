@@ -16,6 +16,9 @@ import Billing from './pages/Billing';
 import AdminDashboard from './pages/AdminDashboard';
 import BlogPost from './pages/BlogPost';
 import Profile from './pages/Profile';
+import Calls from './pages/Calls';
+import Team from './pages/Team';
+import Onboarding from './pages/Onboarding';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -61,6 +64,32 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
+// Protected Route with Onboarding Check
+const ProtectedRouteWithOnboarding: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading, isNewUser } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (isNewUser) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 function AppRoutes() {
   return (
     <div className="min-h-screen w-full bg-gray-50">
@@ -95,27 +124,99 @@ function AppRoutes() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <Dashboard />
-            </ProtectedRoute>
+            </ProtectedRouteWithOnboarding>
           }
         />
         <Route
           path="/profile"
           element={
-            <ProtectedRoute>
+            <ProtectedRouteWithOnboarding>
               <Profile />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/builder"
+          element={
+            <ProtectedRouteWithOnboarding>
+              <AgentBuilder />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/voice-agents"
+          element={
+            <ProtectedRouteWithOnboarding>
+              <VoiceAgents />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/video-agents"
+          element={
+            <ProtectedRouteWithOnboarding>
+              <VideoAgents />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/my-video-agents"
+          element={
+            <ProtectedRouteWithOnboarding>
+              <MyVideoAgents />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRouteWithOnboarding>
+              <Analytics />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRouteWithOnboarding>
+              <Settings />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/billing"
+          element={
+            <ProtectedRouteWithOnboarding>
+              <Billing />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/calls"
+          element={
+            <ProtectedRouteWithOnboarding>
+              <Calls />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/team"
+          element={
+            <ProtectedRouteWithOnboarding>
+              <Team />
+            </ProtectedRouteWithOnboarding>
+          }
+        />
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <Onboarding />
             </ProtectedRoute>
           }
         />
-        {/* All sidebar-linked routes are now public except those above */}
-        <Route path="/builder" element={<AgentBuilder />} />
-        <Route path="/voice-agents" element={<VoiceAgents />} />
-        <Route path="/video-agents" element={<VideoAgents />} />
-        <Route path="/my-video-agents" element={<MyVideoAgents />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/billing" element={<Billing />} />
         {/* Admin Route can remain protected if needed */}
         <Route
           path="/admin"
@@ -125,7 +226,7 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route path="/blog/:id" element={<BlogPost />} />
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import { Users, Star, Building2, Sparkles } from 'lucide-react';
+import { Users, Star, Building2, Sparkles, Play } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Marketplace: React.FC = () => {
   const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'nhancio' | 'partner' | 'all'>('nhancio');
+  const [deployingAgent, setDeployingAgent] = useState<string | null>(null);
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Fetch agents from Supabase
   useEffect(() => {
@@ -15,7 +21,10 @@ const Marketplace: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const { data, error } = await supabase.from('agents').select('*');
+        const { data, error } = await supabase
+          .from('agents')
+          .select('*')
+          .limit(100);
         if (error) throw error;
         setAgents(data || []);
       } catch (err: any) {
@@ -26,11 +35,36 @@ const Marketplace: React.FC = () => {
       }
     };
     fetchAgents();
-  }, []);
+  }, [user]);
 
   const getCurrentAgents = () => {
     if (activeTab === 'all') return agents;
     return agents.filter(agent => agent.category === activeTab);
+  };
+
+  const handleDeployAgent = async (agent: any) => {
+    if (!user) {
+      // Redirect directly to login page for non-logged-in users
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setDeployingAgent(agent.id);
+
+      // Here you would implement the actual deployment logic
+      // For now, we'll just show a success message
+      alert(`Agent "${agent.Name}" is being deployed to your account!`);
+
+      // You could also redirect to the agent builder or dashboard
+      // navigate('/voice-agents');
+
+    } catch (error) {
+      console.error('Deployment failed:', error);
+      alert('Failed to deploy agent. Please try again.');
+    } finally {
+      setDeployingAgent(null);
+    }
   };
 
   const AgentCard = ({ agent }: { agent: any }) => (
@@ -74,6 +108,25 @@ const Marketplace: React.FC = () => {
             </span>
           )}
         </div>
+
+        {/* Deploy Button */}
+        <button
+          onClick={() => handleDeployAgent(agent)}
+          disabled={deployingAgent === agent.id}
+          className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-blue-600 hover:bg-blue-700 text-white ${deployingAgent === agent.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {deployingAgent === agent.id ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              Deploying...
+            </>
+          ) : (
+            <>
+              <Play className="h-4 w-4" />
+              Deploy Agent
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
@@ -84,8 +137,12 @@ const Marketplace: React.FC = () => {
       <div className="w-full lg:ml-64 p-4 sm:p-8 pt-24 max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Agent Marketplace</h1>
-          <p className="text-sm sm:text-base text-gray-600">Discover and deploy pre-built AI agents for your business needs.</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Agent Marketplace</h1>
+              <p className="text-sm sm:text-base text-gray-600">Discover and deploy pre-built AI agents for your business needs.</p>
+            </div>
+          </div>
         </div>
 
         {/* Tab Navigation */}

@@ -10,6 +10,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     setLoading(true);
+
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.warn('[AuthContext] Authentication timeout, setting loading to false');
+      setLoading(false);
+      setIsNewUser(false);
+    }, 5000); // 5 second timeout
+
     const checkUserRow = async (sessionUser: any) => {
       if (!sessionUser) {
         setIsNewUser(false);
@@ -17,14 +25,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
       try {
-        const { data, error } = await supabase
+        // Add timeout to the Supabase query
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Query timeout')), 3000)
+        );
+
+        const queryPromise = supabase
           .from('users')
           .select('id')
           .eq('email', sessionUser.email)
           .single();
-        setIsNewUser(!data || !!error);
+
+        const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+
+        // Only set isNewUser to true if we're certain the user doesn't exist
+        // If there's an error or timeout, assume user exists to prevent unwanted redirects
+        if (data && !error) {
+          setIsNewUser(false); // User exists in database
+        } else if (error && error.code === 'PGRST116') {
+          setIsNewUser(true); // User not found (specific error code)
+        } else {
+          // For any other error or timeout, assume user exists to prevent unwanted redirects
+          console.warn('[AuthContext] Query error/timeout, assuming user exists:', error);
+          setIsNewUser(false);
+        }
       } catch (err) {
-        setIsNewUser(true);
+        console.error('[AuthContext] Error checking user row:', err);
+        // On any exception, assume user exists to prevent unwanted redirects
+        setIsNewUser(false);
       }
       setLoading(false);
     };
@@ -40,14 +68,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log('[AuthContext] getSession on mount:', data?.session, error);
       setUser(data?.session?.user ?? null);
       checkUserRow(data?.session?.user ?? null);
-      setLoading(false);
+      clearTimeout(timeoutId);
     }).catch((err) => {
       console.error('[AuthContext] Error restoring session:', err);
       setUser(null);
       setLoading(false);
+      clearTimeout(timeoutId);
     });
 
     return () => {
+      clearTimeout(timeoutId);
       listener?.subscription.unsubscribe();
     };
   }, []);
@@ -75,8 +105,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signOut();
   };
 
+  const completeOnboarding = () => {
+    setIsNewUser(false);
+  };
+
+
+
+  // Debug logging
+  console.log('[AuthContext] Current state:', {
+    user: user?.id,
+    loading,
+    isNewUser,
+    hasUser: !!user,
+    timestamp: new Date().toISOString()
+  });
+
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, googleProfile: getGoogleProfile(user), isNewUser, setIsNewUser }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, googleProfile: getGoogleProfile(user), isNewUser, setIsNewUser, completeOnboarding }}>
       {children}
     </AuthContext.Provider>
   );
