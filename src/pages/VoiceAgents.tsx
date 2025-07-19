@@ -47,17 +47,31 @@ const VoiceAgents: React.FC = () => {
         setLoading(false);
         return;
       }
-      // Fetch subscriptions and join with agents
-      const { data, error } = await supabase
+      console.log('Fetching agents for user:', user.id);
+
+      // Fetch subscribed agents using the user_agent_subscriptions table
+      const { data: subscribedAgents, error: agentsError } = await supabase
         .from('user_agent_subscriptions')
-        .select('agent_id, agents(*)')
+        .select(`
+          agent_id,
+          agents (*)
+        `)
         .eq('user_id', user.id);
-      if (error) throw error;
-      // Extract agent details from the joined result
-      const subscribedAgents = (data || []).map((row: any) => row.agents).filter(Boolean);
-      setAgents(subscribedAgents);
+
+      if (agentsError) {
+        console.error('Error fetching subscribed agents:', agentsError);
+        throw agentsError;
+      }
+
+      console.log('Subscribed agents data:', subscribedAgents);
+
+      // Extract the agents from the joined data
+      const agents = subscribedAgents?.map(subscription => subscription.agents).filter(Boolean) || [];
+      console.log('Extracted agents:', agents);
+      setAgents(agents);
     } catch (err) {
-      setError('Failed to fetch subscribed agents');
+      console.error('Error fetching agents:', err);
+      setError('Failed to fetch agents');
       setAgents([]);
     } finally {
       setLoading(false);
@@ -102,7 +116,7 @@ const VoiceAgents: React.FC = () => {
                   ({agents.length})
                 </span>
               </h1>
-              <p className="text-gray-600">Manage your agents for phone calls and customer interactions.</p>
+              <p className="text-gray-600">Your subscribed voice agents for phone calls and customer interactions.</p>
             </div>
           </div>
         </div>
@@ -117,13 +131,13 @@ const VoiceAgents: React.FC = () => {
               {agents.map((agent) => (
                 <div key={agent.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all group w-full p-6 flex flex-col items-center">
                   {agent.avatar_url || agent.logo ? (
-                    <img src={agent.avatar_url || agent.logo} alt={agent.Name} className="w-16 h-16 object-cover rounded-full mb-3" />
+                    <img src={agent.avatar_url || agent.logo} alt={agent.name} className="w-16 h-16 object-cover rounded-full mb-3" />
                   ) : (
                     <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 mb-3">
                       <Users className="h-8 w-8 text-gray-400" />
                     </div>
                   )}
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center">{agent.Name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center">{agent.name}</h3>
                   <div className="text-xs text-gray-500 mb-2 text-center">{agent.id}</div>
                   <div className="text-sm text-gray-700 mb-1 text-center">{agent.description || 'No profile/description'}</div>
                   <div className="text-xs text-gray-400 text-center">{agent.created_at ? new Date(agent.created_at).toLocaleString() : ''}</div>
