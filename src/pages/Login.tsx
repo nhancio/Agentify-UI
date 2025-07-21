@@ -1,21 +1,25 @@
 import React, { useEffect } from 'react';
 import { Bot } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const { signInWithGoogle, loading, user, isNewUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (user) {
       if (isNewUser) {
         navigate('/onboarding');
       } else {
-        navigate('/dashboard');
+        const from = location.state?.from?.pathname || '/dashboard';
+        navigate(from, { replace: true });
       }
     }
-  }, [user, isNewUser, navigate]);
+  }, [user, isNewUser, navigate, location]);
+
+  // Remove email/password form and only show Google sign-in
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 flex items-center justify-center p-4">

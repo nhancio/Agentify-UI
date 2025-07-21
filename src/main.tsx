@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Dashboard from './pages/Dashboard';
 import Billing from './pages/Billing';
@@ -26,17 +26,30 @@ import BlogPost from './pages/BlogPost';
 
 function ProtectedRouteWithOnboarding({ children }: { children: React.ReactNode }) {
   const { user, loading, isNewUser } = useAuth();
+  const location = useLocation();
 
   if (loading) return <div>Loading...</div>;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
   if (isNewUser) return <Navigate to="/onboarding" replace />;
   return <>{children}</>;
+}
+
+function GlobalOnboardingRedirect() {
+  const { user, isNewUser, loading } = useAuth();
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    if (!loading && user && isNewUser && window.location.pathname !== '/onboarding') {
+      navigate('/onboarding', { replace: true });
+    }
+  }, [user, isNewUser, loading, navigate]);
+  return null;
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
       <BrowserRouter>
+        <GlobalOnboardingRedirect />
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />

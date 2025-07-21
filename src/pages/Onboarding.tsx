@@ -63,7 +63,7 @@ const Onboarding: React.FC = () => {
       });
 
       if (error) throw error;
-      setIsNewUser(false);
+      completeOnboarding();
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to complete onboarding');

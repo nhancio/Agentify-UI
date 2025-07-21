@@ -36,7 +36,7 @@ const navigation = [
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, googleProfile } = useAuth();
+  const { user, googleProfile, signInWithGoogle } = useAuth();
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -58,21 +58,31 @@ const Sidebar: React.FC = () => {
           <nav className="flex-1 px-4 py-6 space-y-2">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
+              const isMarketplace = item.name === 'Marketplace';
               return (
-                <Link
+                <button
                   key={item.name}
-                  to={item.href}
-                  className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 group ${isActive
+                  onClick={() => {
+                    if (!user && !isMarketplace) {
+                      signInWithGoogle();
+                    } else if (!user && isMarketplace) {
+                      signInWithGoogle();
+                    } else {
+                      navigate(item.href);
+                    }
+                  }}
+                  className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 group text-left ${isActive
                     ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400'
                     : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
                     }`}
+                  style={{ cursor: 'pointer' }}
                 >
                   <item.icon className={`mr-3 h-5 w-5 transition-colors duration-300 ${isActive
                     ? 'text-blue-600 dark:text-blue-400'
                     : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'
                     }`} />
                   {item.name}
-                </Link>
+                </button>
               );
             })}
           </nav>
@@ -118,7 +128,7 @@ const Sidebar: React.FC = () => {
               // Non-logged in user
               <div className="space-y-2">
                 <button
-                  onClick={() => navigate('/login')}
+                  onClick={signInWithGoogle}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all"
                 >
                   <LogIn className="h-4 w-4" />

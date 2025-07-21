@@ -10,7 +10,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, signOut, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,11 +22,10 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const headerClasses = `fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
-    transparent && !isScrolled
-      ? "bg-transparent"
-      : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-200/20 dark:border-gray-700/20"
-  }`;
+  const headerClasses = `fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${transparent && !isScrolled
+    ? "bg-transparent"
+    : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-200/20 dark:border-gray-700/20"
+    }`;
 
   return (
     <header className={headerClasses}>
@@ -92,12 +91,18 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             >
               Pricing
             </Link>
-            <Link
-              to='/dashboard'
+            <button
               className='bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium'
+              onClick={() => {
+                if (!user) {
+                  signInWithGoogle();
+                } else {
+                  navigate('/dashboard');
+                }
+              }}
             >
               Dashboard
-            </Link>
+            </button>
             {user ? (
               <button
                 onClick={async () => {
@@ -109,12 +114,12 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
                 Sign Out
               </button>
             ) : (
-              <Link
-                to='/login'
+              <button
+                onClick={signInWithGoogle}
                 className='ml-2 bg-white text-blue-600 border border-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-all duration-300'
               >
                 Sign In
-              </Link>
+              </button>
             )}
           </nav>
 

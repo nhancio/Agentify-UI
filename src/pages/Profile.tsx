@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import AnimatedButton from '../components/AnimatedButton';
 import FloatingElements from '../components/FloatingElements';
 import TypewriterText from '../components/TypewriterText';
+import { useNavigate } from 'react-router-dom';
 
 const mockAchievements = [
   { icon: Award, label: 'Early Adopter', color: 'yellow' },
@@ -24,6 +25,7 @@ const Profile: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -112,7 +114,7 @@ const Profile: React.FC = () => {
             />
             <div className="text-gray-500 mb-2">{googleProfile?.email || profile?.email}</div>
             <AnimatedButton size="md" className="w-full mt-2" icon={<Edit className="w-4 h-4" />}>Edit Profile</AnimatedButton>
-            <AnimatedButton size="md" variant="secondary" className="w-full mt-2" icon={<LogOut className="w-4 h-4" />} onClick={signOut}>Sign Out</AnimatedButton>
+            <AnimatedButton size="md" variant="secondary" className="w-full mt-2" icon={<LogOut className="w-4 h-4" />} onClick={async () => { await signOut(); navigate('/'); }}>Sign Out</AnimatedButton>
             <AnimatedButton size="md" variant="secondary" className="w-full mt-2">Support</AnimatedButton>
           </div>
 

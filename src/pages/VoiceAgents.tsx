@@ -13,12 +13,15 @@ import {
   TrendingUp,
   PhoneCall,
   Mic,
-  Volume2
+  Volume2,
+  Zap,
+  AlertCircle
 } from 'lucide-react';
 import { agentService } from '../lib/api';
 import { voiceAgentService } from '../lib/voiceAgent';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const VoiceAgents: React.FC = () => {
   const [agents, setAgents] = useState<any[]>([]);
@@ -26,6 +29,8 @@ const VoiceAgents: React.FC = () => {
   const [error, setError] = useState('');
   const [showBuilder, setShowBuilder] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<any | null>(null);
+  const [userCredits, setUserCredits] = useState<number>(0);
+  const [agentCredits, setAgentCredits] = useState<number>(10); // Default agent deployment cost
   const [stats, setStats] = useState({
     totalAgents: 0,
     activeAgents: 0,
@@ -37,6 +42,28 @@ const VoiceAgents: React.FC = () => {
   const [elLoading, setElLoading] = useState(false);
 
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const fetchUserCredits = async () => {
+    try {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('users')
+        .select('credits')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user credits:', error);
+        return;
+      }
+
+      setUserCredits(data.credits || 0);
+    } catch (err) {
+      console.error('Error fetching user credits:', err);
+    }
+  };
 
   const fetchAgents = async () => {
     setLoading(true);
@@ -80,6 +107,7 @@ const VoiceAgents: React.FC = () => {
 
   useEffect(() => {
     fetchAgents();
+    fetchUserCredits();
   }, [user]);
 
   const handleCreateAgent = () => {
@@ -95,6 +123,45 @@ const VoiceAgents: React.FC = () => {
   const handleAgentSaved = (agent: any) => {
     setShowBuilder(false);
     fetchAgents();
+  };
+
+  const handleDeployAgent = async (agent: any) => {
+    try {
+      // Check if user has enough credits
+      if (userCredits < agentCredits) {
+        // Show alert message
+        alert(`Insufficient credits! You need ${agentCredits} credits to deploy this agent, but you only have ${userCredits} credits. Redirecting to profile page to add more credits.`);
+
+        // Redirect to profile page to add more credits
+        navigate('/profile');
+        return;
+      }
+
+      // Deploy the agent
+      await voiceAgentService.deployAgent(agent.id);
+
+      // Deduct credits from user account
+      const { error } = await supabase
+        .from('users')
+        .update({ credits: userCredits - agentCredits })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error updating credits:', error);
+      } else {
+        // Refresh user credits
+        fetchUserCredits();
+        // Refresh agents list
+        fetchAgents();
+      }
+    } catch (err) {
+      console.error('Error deploying agent:', err);
+      setError('Failed to deploy agent');
+    }
+  };
+
+  const handleAddCredits = () => {
+    navigate('/profile');
   };
 
   if (showBuilder) {
@@ -140,7 +207,28 @@ const VoiceAgents: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center">{agent.name}</h3>
                   <div className="text-xs text-gray-500 mb-2 text-center">{agent.id}</div>
                   <div className="text-sm text-gray-700 mb-1 text-center">{agent.description || 'No profile/description'}</div>
-                  <div className="text-xs text-gray-400 text-center">{agent.created_at ? new Date(agent.created_at).toLocaleString() : ''}</div>
+                  <div className="text-xs text-gray-400 text-center mb-4">{agent.created_at ? new Date(agent.created_at).toLocaleString() : ''}</div>
+
+                  {/* Credit Information */}
+                  <div className="w-full mb-4 p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Your Credits:</span>
+                      <span className="font-semibold text-blue-600">{userCredits}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm mt-1">
+                      <span className="text-gray-600">Deploy Cost:</span>
+                      <span className="font-semibold text-orange-600">{agentCredits}</span>
+                    </div>
+                  </div>
+
+                  {/* Deploy Button */}
+                  <button
+                    onClick={() => handleDeployAgent(agent)}
+                    className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Zap className="w-4 h-4" />
+                    Deploy Agent
+                  </button>
                 </div>
               ))}
             </div>

@@ -11,9 +11,31 @@ const Marketplace: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'nhancio' | 'partner' | 'all'>('nhancio');
   const [deployingAgent, setDeployingAgent] = useState<string | null>(null);
+  const [userCredits, setUserCredits] = useState<number>(0);
 
-  const { user } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  const fetchUserCredits = async () => {
+    try {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('users')
+        .select('credits')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user credits:', error);
+        return;
+      }
+
+      setUserCredits(data.credits || 0);
+    } catch (err) {
+      console.error('Error fetching user credits:', err);
+    }
+  };
 
   // Fetch agents from Supabase
   useEffect(() => {
@@ -35,6 +57,7 @@ const Marketplace: React.FC = () => {
       }
     };
     fetchAgents();
+    fetchUserCredits();
   }, [user]);
 
   const getCurrentAgents = () => {
@@ -44,17 +67,41 @@ const Marketplace: React.FC = () => {
 
   const handleDeployAgent = async (agent: any) => {
     if (!user) {
-      // Redirect directly to login page for non-logged-in users
-      navigate('/login');
+      // Trigger Google sign-in for non-logged-in users
+      signInWithGoogle();
       return;
     }
 
     try {
       setDeployingAgent(agent.id);
 
+      // Check if user has enough credits
+      const agentCost = agent.credits || 0;
+      if (userCredits < agentCost) {
+        // Show alert message
+        alert(`Insufficient credits! You need ${agentCost} credits to deploy "${agent.Name}", but you only have ${userCredits} credits. Redirecting to profile page to add more credits.`);
+
+        // Redirect to profile page to add more credits
+        navigate('/profile');
+        return;
+      }
+
       // Here you would implement the actual deployment logic
       // For now, we'll just show a success message
       alert(`Agent "${agent.Name}" is being deployed to your account!`);
+
+      // Deduct credits from user account
+      const { error } = await supabase
+        .from('users')
+        .update({ credits: userCredits - agentCost })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error updating credits:', error);
+      } else {
+        // Refresh user credits
+        fetchUserCredits();
+      }
 
       // You could also redirect to the agent builder or dashboard
       // navigate('/voice-agents');
@@ -94,6 +141,18 @@ const Marketplace: React.FC = () => {
           <span className="text-blue-700 font-medium">{agent.credits ?? '--'} credits/run</span>
           <span className="text-gray-500 text-sm">{agent["no.of_subscribers"] ?? 0} subscribers</span>
         </div>
+
+        {/* User Credits Display */}
+        {user && (
+          <div className="mb-3 p-2 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">Your Credits:</span>
+              <span className={`font-semibold ${userCredits >= (agent.credits || 0) ? 'text-green-600' : 'text-red-600'}`}>
+                {userCredits}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Tag and Type as labels */}
         <div className="flex flex-wrap gap-2 mb-4">
@@ -155,8 +214,7 @@ const Marketplace: React.FC = () => {
                 : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
-              <Sparkles className="h-4 w-4 mr-2" />
-              Nhancio Agents
+              Automations
             </button>
             <button
               onClick={() => setActiveTab('partner')}
@@ -165,8 +223,7 @@ const Marketplace: React.FC = () => {
                 : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
-              <Building2 className="h-4 w-4 mr-2" />
-              Partner Agents
+              Voice Agents
             </button>
             <button
               onClick={() => setActiveTab('all')}
@@ -175,8 +232,7 @@ const Marketplace: React.FC = () => {
                 : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
-              <Users className="h-4 w-4 mr-2" />
-              All Agents
+              Video Agents
             </button>
           </div>
         </div>

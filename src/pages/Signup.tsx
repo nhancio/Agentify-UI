@@ -49,7 +49,7 @@ const Signup: React.FC = () => {
         company_name: formData.companyName,
         phone: formData.phone
       });
-      navigate('/dashboard');
+      navigate('/onboarding');
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
     } finally {
