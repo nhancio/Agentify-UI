@@ -1,5 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../components/Sidebar';
+// Deduct credits
+await supabase.from('users')
+  .update({ credits: userCredits - agentCost })
+  .eq('id', user.id);
+
+// Subscribe user to agent (if needed)
+await supabase.from('user_agent_subscriptions').insert({
+  user_id: user.id,
+  agent_id: agent.id
+}); await supabase.from('user_app_config')
+  .upsert({
+    user_id: user.id,
+    agent_id: bloggerAgent.id,
+    config: data
+  }, { onConflict: ['user_id', 'agent_id'] }); import Sidebar from '../components/Sidebar';
 import { Users, Star, Building2, Sparkles, Play } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -296,11 +310,37 @@ const Marketplace: React.FC = () => {
         onSubmit={async (data) => {
           setShowEmailForm(false);
           if (!user || !emailAgent) return;
-          await supabase.from('user_app_config').insert({
+          const { error } = await supabase.from('user_app_config').upsert([
+            {
+              user_id: user.id,
+              agent_id: Number(emailAgent.id), // ensure this is bigint
+              config: data
+            }
+          ], { onConflict: 'user_id,agent_id' });
+          if (error) {
+            console.error('Upsert error:', error);
+            alert('Failed to save config: ' + error.message);
+            return;
+          }
+          // Deduct credits and subscribe only after config is saved
+          const agentCost = emailAgent.credits || 0;
+          const { error: creditError } = await supabase.from('users')
+            .update({ credits: userCredits - agentCost })
+            .eq('id', user.id);
+          if (creditError) {
+            console.error('Credit deduction error:', creditError);
+            alert('Failed to deduct credits: ' + creditError.message);
+          } else {
+            fetchUserCredits();
+          }
+          const { error: subError } = await supabase.from('user_agent_subscriptions').insert({
             user_id: user.id,
-            app_id: emailAgent.id,
-            config: data
+            agent_id: emailAgent.id
           });
+          if (subError) {
+            console.error('Subscription error:', subError);
+            // Not fatal, so don't block
+          }
         }}
       />
       <BloggerAgentDeployForm
@@ -309,11 +349,37 @@ const Marketplace: React.FC = () => {
         onSubmit={async (data) => {
           setShowBloggerForm(false);
           if (!user || !bloggerAgent) return;
-          await supabase.from('user_app_config').insert({
+          const { error } = await supabase.from('user_app_config').upsert([
+            {
+              user_id: user.id,
+              agent_id: Number(bloggerAgent.id), // ensure this is bigint
+              config: data
+            }
+          ], { onConflict: 'user_id,agent_id' });
+          if (error) {
+            console.error('Upsert error:', error);
+            alert('Failed to save config: ' + error.message);
+            return;
+          }
+          // Deduct credits and subscribe only after config is saved
+          const agentCost = bloggerAgent.credits || 0;
+          const { error: creditError } = await supabase.from('users')
+            .update({ credits: userCredits - agentCost })
+            .eq('id', user.id);
+          if (creditError) {
+            console.error('Credit deduction error:', creditError);
+            alert('Failed to deduct credits: ' + creditError.message);
+          } else {
+            fetchUserCredits();
+          }
+          const { error: subError } = await supabase.from('user_agent_subscriptions').insert({
             user_id: user.id,
-            app_id: bloggerAgent.id,
-            config: data
+            agent_id: bloggerAgent.id
           });
+          if (subError) {
+            console.error('Subscription error:', subError);
+            // Not fatal, so don't block
+          }
         }}
       />
       <div className="w-full lg:ml-64 p-4 sm:p-8 pt-24 max-w-7xl mx-auto">
