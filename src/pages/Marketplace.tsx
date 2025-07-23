@@ -1,19 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// Deduct credits
-await supabase.from('users')
-  .update({ credits: userCredits - agentCost })
-  .eq('id', user.id);
-
-// Subscribe user to agent (if needed)
-await supabase.from('user_agent_subscriptions').insert({
-  user_id: user.id,
-  agent_id: agent.id
-}); await supabase.from('user_app_config')
-  .upsert({
-    user_id: user.id,
-    agent_id: bloggerAgent.id,
-    config: data
-  }, { onConflict: ['user_id', 'agent_id'] }); import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/Sidebar';
 import { Users, Star, Building2, Sparkles, Play } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -310,6 +296,14 @@ const Marketplace: React.FC = () => {
         onSubmit={async (data) => {
           setShowEmailForm(false);
           if (!user || !emailAgent) return;
+          // Debug log
+          console.log('Upserting user_app_config:', {
+            user_id: user.id,
+            agent_id: emailAgent.id,
+            agent_id_type: typeof emailAgent.id,
+            agent_id_number: Number(emailAgent.id),
+            agent_id_number_type: typeof Number(emailAgent.id)
+          });
           const { error } = await supabase.from('user_app_config').upsert([
             {
               user_id: user.id,
@@ -349,6 +343,14 @@ const Marketplace: React.FC = () => {
         onSubmit={async (data) => {
           setShowBloggerForm(false);
           if (!user || !bloggerAgent) return;
+          // Debug log
+          console.log('Upserting user_app_config:', {
+            user_id: user.id,
+            agent_id: bloggerAgent.id,
+            agent_id_type: typeof bloggerAgent.id,
+            agent_id_number: Number(bloggerAgent.id),
+            agent_id_number_type: typeof Number(bloggerAgent.id)
+          });
           const { error } = await supabase.from('user_app_config').upsert([
             {
               user_id: user.id,
