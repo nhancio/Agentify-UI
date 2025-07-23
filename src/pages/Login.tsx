@@ -13,11 +13,10 @@ const Login: React.FC = () => {
       if (isNewUser) {
         navigate('/onboarding');
       } else {
-        const from = location.state?.from?.pathname || '/dashboard';
-        navigate(from, { replace: true });
+        navigate('/dashboard', { replace: true });
       }
     }
-  }, [user, isNewUser, navigate, location]);
+  }, [user, isNewUser, navigate]);
 
   // Remove email/password form and only show Google sign-in
 

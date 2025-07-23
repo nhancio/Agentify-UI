@@ -5,6 +5,89 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+const EmailAgentDeployForm = ({ open, onClose, onSubmit }: { open: boolean, onClose: () => void, onSubmit: (data: any) => void }) => {
+  const [form, setForm] = useState({
+    gmail: '',
+    clientId: '',
+    clientSecret: '',
+    emailsListUrl: '',
+    emailsCsv: null as File | null,
+    emailsField: '',
+    subject: '',
+    body: '',
+    mode: 'custom', // or 'ai'
+  });
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg relative">
+        <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={onClose}>&times;</button>
+        <h2 className="text-xl font-bold mb-4">Deploy Email Agent</h2>
+        <form onSubmit={e => { e.preventDefault(); onSubmit(form); }} className="space-y-4">
+          <label className="block mb-1">Gmail <span className="text-red-600">*</span></label>
+          <input className="w-full border rounded p-2" placeholder="Gmail" value={form.gmail} onChange={e => setForm(f => ({ ...f, gmail: e.target.value }))} required />
+          <label className="block mb-1">Client ID <span className="text-red-600">*</span></label>
+          <input className="w-full border rounded p-2" placeholder="Client ID" value={form.clientId} onChange={e => setForm(f => ({ ...f, clientId: e.target.value }))} required />
+          <input className="w-full border rounded p-2" placeholder="Client Secret" value={form.clientSecret} onChange={e => setForm(f => ({ ...f, clientSecret: e.target.value }))} />
+          <div className="flex gap-2">
+            <input className="flex-1 border rounded p-2" placeholder="Emails List URL" value={form.emailsListUrl} onChange={e => setForm(f => ({ ...f, emailsListUrl: e.target.value }))} />
+            <input className="flex-1 border rounded p-2" placeholder="Field" value={form.emailsField} onChange={e => setForm(f => ({ ...f, emailsField: e.target.value }))} />
+          </div>
+          <div>
+            <label className="block mb-1">Upload CSV</label>
+            <input type="file" accept=".csv" onChange={e => setForm(f => ({ ...f, emailsCsv: e.target.files?.[0] || null }))} />
+          </div>
+          <input className="w-full border rounded p-2" placeholder="Subject" value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} />
+          <textarea className="w-full border rounded p-2" placeholder="Body" value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} />
+          <div className="flex gap-2">
+            <button type="button" className={`flex-1 border rounded p-2 ${form.mode === 'custom' ? 'bg-blue-100' : ''}`} onClick={() => setForm(f => ({ ...f, mode: 'custom' }))}>Custom</button>
+            <button type="button" className={`flex-1 border rounded p-2 ${form.mode === 'ai' ? 'bg-blue-100' : ''}`} onClick={() => setForm(f => ({ ...f, mode: 'ai' }))}>Create with AI</button>
+          </div>
+          <button type="submit" className="w-full bg-blue-600 text-white rounded p-2 font-semibold">Submit</button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const BloggerAgentDeployForm = ({ open, onClose, onSubmit }: { open: boolean, onClose: () => void, onSubmit: (data: any) => void }) => {
+  const [form, setForm] = useState({
+    email: '',
+    wpUsername: '',
+    wpUrl: '',
+    wpAppPassword: '',
+    schedule: 'daily',
+  });
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg relative">
+        <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={onClose}>&times;</button>
+        <h2 className="text-xl font-bold mb-4">Deploy Blogger Agent</h2>
+        <form onSubmit={e => { e.preventDefault(); onSubmit(form); }} className="space-y-4">
+          <label className="block mb-1">Email <span className="text-red-600">*</span></label>
+          <input className="w-full border rounded p-2" placeholder="Email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
+          <label className="block mb-1">Username <span className="text-red-600">*</span></label>
+          <input className="w-full border rounded p-2" placeholder="Username" value={form.wpUsername} onChange={e => setForm(f => ({ ...f, wpUsername: e.target.value }))} required />
+          <label className="block mb-1">URL <span className="text-red-600">*</span></label>
+          <input className="w-full border rounded p-2" placeholder="URL" value={form.wpUrl} onChange={e => setForm(f => ({ ...f, wpUrl: e.target.value }))} required />
+          <label className="block mb-1">Password <span className="text-red-600">*</span></label>
+          <input className="w-full border rounded p-2" placeholder="Password" value={form.wpAppPassword} onChange={e => setForm(f => ({ ...f, wpAppPassword: e.target.value }))} required />
+          <label className="block mb-1">Schedule <span className="text-red-600">*</span></label>
+          <select className="w-full border rounded p-2" value={form.schedule} onChange={e => setForm(f => ({ ...f, schedule: e.target.value }))} required>
+            <option value="hourly">Hourly</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+          <button type="submit" className="w-full bg-blue-600 text-white rounded p-2 font-semibold">Submit</button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const Marketplace: React.FC = () => {
   const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -12,6 +95,10 @@ const Marketplace: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'nhancio' | 'partner' | 'all'>('nhancio');
   const [deployingAgent, setDeployingAgent] = useState<string | null>(null);
   const [userCredits, setUserCredits] = useState<number>(0);
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [emailAgent, setEmailAgent] = useState<any>(null);
+  const [showBloggerForm, setShowBloggerForm] = useState(false);
+  const [bloggerAgent, setBloggerAgent] = useState<any>(null);
 
   const { user, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
@@ -69,6 +156,16 @@ const Marketplace: React.FC = () => {
     if (!user) {
       // Trigger Google sign-in for non-logged-in users
       signInWithGoogle();
+      return;
+    }
+    if (agent.type === 'email') {
+      setEmailAgent(agent);
+      setShowEmailForm(true);
+      return;
+    }
+    if (agent.type === 'blog') {
+      setBloggerAgent(agent);
+      setShowBloggerForm(true);
       return;
     }
 
@@ -193,6 +290,32 @@ const Marketplace: React.FC = () => {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
       <Sidebar />
+      <EmailAgentDeployForm
+        open={showEmailForm}
+        onClose={() => setShowEmailForm(false)}
+        onSubmit={async (data) => {
+          setShowEmailForm(false);
+          if (!user || !emailAgent) return;
+          await supabase.from('user_app_config').insert({
+            user_id: user.id,
+            app_id: emailAgent.id,
+            config: data
+          });
+        }}
+      />
+      <BloggerAgentDeployForm
+        open={showBloggerForm}
+        onClose={() => setShowBloggerForm(false)}
+        onSubmit={async (data) => {
+          setShowBloggerForm(false);
+          if (!user || !bloggerAgent) return;
+          await supabase.from('user_app_config').insert({
+            user_id: user.id,
+            app_id: bloggerAgent.id,
+            config: data
+          });
+        }}
+      />
       <div className="w-full lg:ml-64 p-4 sm:p-8 pt-24 max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -232,7 +355,7 @@ const Marketplace: React.FC = () => {
                 : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
-              Video Agents
+              All Agents
             </button>
           </div>
         </div>

@@ -42,6 +42,12 @@ const WORDPRESS_API_URL =
 const Landing: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  // Redirect authenticated users to dashboard
+  React.useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showVideoSupport, setShowVideoSupport] = useState(false);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
@@ -676,19 +682,17 @@ const Landing: React.FC = () => {
             {pricingPlans.map((plan, index) => (
               <ScrollReveal key={index} direction='up' delay={index * 200}>
                 <div
-                  className={`relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 ${
-                    plan.highlighted
+                  className={`relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 ${plan.highlighted
                       ? "bg-white shadow-2xl scale-105 border-4 border-yellow-400"
                       : "bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20"
-                  }`}
+                    }`}
                 >
                   {plan.badge && (
                     <div
-                      className={`absolute top-0 left-0 right-0 text-center py-2 ${
-                        plan.highlighted
+                      className={`absolute top-0 left-0 right-0 text-center py-2 ${plan.highlighted
                           ? "bg-gradient-to-r from-yellow-400 to-orange-500"
                           : "bg-gradient-to-r from-blue-500 to-purple-500"
-                      }`}
+                        }`}
                     >
                       <span className='text-sm font-semibold text-black'>
                         {plan.badge}
@@ -698,31 +702,27 @@ const Landing: React.FC = () => {
 
                   <div className={`p-8 ${plan.badge ? "pt-12" : ""}`}>
                     <h3
-                      className={`text-2xl font-bold mb-2 ${
-                        plan.highlighted ? "text-gray-900" : "text-white"
-                      }`}
+                      className={`text-2xl font-bold mb-2 ${plan.highlighted ? "text-gray-900" : "text-white"
+                        }`}
                     >
                       {plan.name}
                     </h3>
                     <p
-                      className={`mb-6 ${
-                        plan.highlighted ? "text-gray-600" : "text-blue-100"
-                      }`}
+                      className={`mb-6 ${plan.highlighted ? "text-gray-600" : "text-blue-100"
+                        }`}
                     >
                       {plan.description}
                     </p>
                     <div className='mb-6'>
                       <span
-                        className={`text-5xl font-bold ${
-                          plan.highlighted ? "text-gray-900" : "text-white"
-                        }`}
+                        className={`text-5xl font-bold ${plan.highlighted ? "text-gray-900" : "text-white"
+                          }`}
                       >
                         {plan.price}
                       </span>
                       <span
-                        className={`text-lg ${
-                          plan.highlighted ? "text-gray-600" : "text-blue-100"
-                        }`}
+                        className={`text-lg ${plan.highlighted ? "text-gray-600" : "text-blue-100"
+                          }`}
                       >
                         {plan.period}
                       </span>
@@ -732,11 +732,10 @@ const Landing: React.FC = () => {
                       {plan.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className='flex items-center'>
                           <CheckCircle
-                            className={`h-5 w-5 mr-3 ${
-                              plan.highlighted
+                            className={`h-5 w-5 mr-3 ${plan.highlighted
                                 ? "text-green-600"
                                 : "text-yellow-400"
-                            }`}
+                              }`}
                           />
                           <span
                             className={
@@ -751,11 +750,10 @@ const Landing: React.FC = () => {
                       ))}
                     </ul>
                     <button
-                      className={`w-full ${
-                        plan.highlighted
+                      className={`w-full ${plan.highlighted
                           ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                           : "border border-white text-white"
-                      } px-6 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors`}
+                        } px-6 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors`}
                       onClick={() => alert("Checkout integration coming soon!")}
                     >
                       Get Started
