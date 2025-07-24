@@ -4,6 +4,7 @@ import { Users, Star, Building2, Sparkles, Play } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import saveToAirtable from '../lib/airtable';
 
 const EmailAgentDeployForm = ({ open, onClose, onSubmit }: { open: boolean, onClose: () => void, onSubmit: (data: any) => void }) => {
   const [form, setForm] = useState({
@@ -311,6 +312,15 @@ const Marketplace: React.FC = () => {
               config: data
             }
           ], { onConflict: 'user_id,agent_id' });
+          // Save to Airtable (only user_id and agent_id for now)
+          const airtablePayload = {
+            user_id: user.id,
+            agent_id: Number(emailAgent.id)
+          };
+          console.log('Airtable payload:', airtablePayload);
+          saveToAirtable(airtablePayload).catch((err) => {
+            console.error('Airtable save error:', err);
+          });
           if (error) {
             console.error('Upsert error:', error);
             alert('Failed to save config: ' + error.message);
@@ -358,6 +368,15 @@ const Marketplace: React.FC = () => {
               config: data
             }
           ], { onConflict: 'user_id,agent_id' });
+          // Save to Airtable (only user_id and agent_id for now)
+          const airtablePayload = {
+            user_id: user.id,
+            agent_id: Number(bloggerAgent.id)
+          };
+          console.log('Airtable payload:', airtablePayload);
+          saveToAirtable(airtablePayload).catch((err) => {
+            console.error('Airtable save error:', err);
+          });
           if (error) {
             console.error('Upsert error:', error);
             alert('Failed to save config: ' + error.message);

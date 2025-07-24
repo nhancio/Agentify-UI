@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Bot, Building, Phone } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import saveToAirtable from '../lib/airtable';
 
 const countryCodes = [
   { code: '+1', label: 'US' },
@@ -60,6 +61,16 @@ const Onboarding: React.FC = () => {
         email: user.email,
         mobile_number: fullPhoneNumber,
         company: form.company
+      });
+
+      // Save to Airtable (non-blocking)
+      saveToAirtable({
+        user_id: user.id,
+        email: user.email,
+        mobile_number: fullPhoneNumber,
+        company: form.company
+      }).catch((err) => {
+        console.error('Airtable save error:', err);
       });
 
       if (error) throw error;
