@@ -305,6 +305,7 @@ const Marketplace: React.FC = () => {
             agent_id_number: Number(emailAgent.id),
             agent_id_number_type: typeof Number(emailAgent.id)
           });
+          console.log('Form data:', data);
           const { error } = await supabase.from('user_app_config').upsert([
             {
               user_id: user.id,
@@ -312,14 +313,22 @@ const Marketplace: React.FC = () => {
               config: data
             }
           ], { onConflict: 'user_id,agent_id' });
-          // Save to Airtable (only user_id and agent_id for now)
+          // Save to Airtable (all relevant fields, exact column names)
           const airtablePayload = {
             user_id: user.id,
-            agent_id: Number(emailAgent.id)
+            agent_id: Number(emailAgent.id),
+            'Gmail': data.gmail,
+            'Client ID': data.clientId,
+            'Client Secret': data.clientSecret,
+            'Emails List URL': data.emailsListUrl, // corrected field name
+            'Field': data.emailsField,
+            'Subject': data.subject,
+            'Body': data.body,
+            'Mode': data.mode
           };
           console.log('Airtable payload:', airtablePayload);
           saveToAirtable(airtablePayload).catch((err) => {
-            console.error('Airtable save error:', err);
+            console.error('Airtable save error:', err, JSON.stringify(err));
           });
           if (error) {
             console.error('Upsert error:', error);
@@ -361,6 +370,7 @@ const Marketplace: React.FC = () => {
             agent_id_number: Number(bloggerAgent.id),
             agent_id_number_type: typeof Number(bloggerAgent.id)
           });
+          console.log('Blogger form data at submit:', data);
           const { error } = await supabase.from('user_app_config').upsert([
             {
               user_id: user.id,
@@ -368,10 +378,15 @@ const Marketplace: React.FC = () => {
               config: data
             }
           ], { onConflict: 'user_id,agent_id' });
-          // Save to Airtable (only user_id and agent_id for now)
+          // Save to Airtable (all relevant fields, exact column names)
           const airtablePayload = {
             user_id: user.id,
-            agent_id: Number(bloggerAgent.id)
+            agent_id: Number(bloggerAgent.id),
+            'Email': data.email,
+            'Username': data.wpUsername,
+            'URL': data.wpUrl,
+            'Password': data.wpAppPassword,
+            'Schedule': data.schedule
           };
           console.log('Airtable payload:', airtablePayload);
           saveToAirtable(airtablePayload).catch((err) => {
