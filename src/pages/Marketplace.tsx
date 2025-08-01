@@ -150,13 +150,38 @@ const Marketplace: React.FC = () => {
 
   const getCurrentAgents = () => {
     if (activeTab === 'all') return agents;
+
+    // Custom filtering for specific tabs
+    if (activeTab === 'nhancio') {
+      // Show social media agents in nhancio/automations tab
+      const filtered = agents.filter(agent =>
+        agent.category === 'nhancio' ||
+        agent["Name"]?.toLowerCase().includes('social media') ||
+        agent.type === 'social_media'
+      );
+      console.log('nhancio agents:', filtered);
+      return filtered;
+    }
+
+    if (activeTab === 'partner') {
+      // Show sales agents in partner tab (Voice Agents)
+      const filtered = agents.filter(agent =>
+        agent.category === 'partner' ||
+        agent.category === 'Voice Agents' ||
+        agent["Name"]?.toLowerCase().includes('sales') ||
+        agent.type === 'voice'
+      );
+      console.log('partner agents:', filtered);
+      return filtered;
+    }
+
     return agents.filter(agent => agent.category === activeTab);
   };
 
   const handleDeployAgent = async (agent: any) => {
     if (!user) {
-      // Trigger Google sign-in for non-logged-in users
-      signInWithGoogle();
+      // Trigger Google sign-in for non-logged-in users with redirect back to marketplace
+      signInWithGoogle('/marketplace');
       return;
     }
     if (agent.type === 'email') {

@@ -40,14 +40,20 @@ const WORDPRESS_API_URL =
   "https://public-api.wordpress.com/rest/v1.1/sites/agentlybotblogs.wordpress.com/posts/";
 
 const Landing: React.FC = () => {
-  const { user } = useAuth();
+  const { user, getRedirectDestination } = useAuth();
   const navigate = useNavigate();
-  // Redirect authenticated users to dashboard
+  // Redirect authenticated users to dashboard or stored redirect destination
   React.useEffect(() => {
     if (user) {
-      navigate('/dashboard', { replace: true });
+      // Check for stored redirect destination first
+      const redirectDestination = getRedirectDestination();
+      if (redirectDestination) {
+        navigate(redirectDestination, { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     }
-  }, [user, navigate]);
+  }, [user, navigate, getRedirectDestination]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showVideoSupport, setShowVideoSupport] = useState(false);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);

@@ -66,7 +66,7 @@ const Sidebar: React.FC = () => {
                     if (!user && !isMarketplace) {
                       signInWithGoogle();
                     } else if (!user && isMarketplace) {
-                      signInWithGoogle();
+                      signInWithGoogle('/marketplace');
                     } else {
                       navigate(item.href);
                     }
@@ -128,7 +128,7 @@ const Sidebar: React.FC = () => {
               // Non-logged in user
               <div className="space-y-2">
                 <button
-                  onClick={signInWithGoogle}
+                  onClick={() => signInWithGoogle()}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all"
                 >
                   <LogIn className="h-4 w-4" />

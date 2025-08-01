@@ -98,6 +98,37 @@ To enable Stripe checkout, set these environment variables in your Supabase proj
 - `yourdomain.com` refers to your deployed frontend domain.  
 - For local testing, use your local dev server URL as shown above.
 
+## 7. Agent Categorization
+
+The system uses the following agent categories for organization and filtering:
+
+### Voice Agents
+- Sales agents and representatives
+- Customer support agents
+- Lead qualification agents
+- Appointment scheduling agents
+
+### nhancio (Automations)
+- Social media agents
+- Content creation agents
+- Marketing automation agents
+- Workflow automation agents
+
+### Partner Agents
+- Third-party integrations
+- Custom partner solutions
+
+### Other Categories
+- Human Resources
+- Hospitality
+- Healthcare
+- Real Estate
+- Finance
+- Education
+
+### Database Updates
+To update existing agent categories, run the SQL script `update_agent_categories.sql` in your Supabase SQL Editor.
+
 ## Current Priority: Steps 1 & 2
 
 Focus on completing the database migration and authentication setup first. The app should then be fully functional for creating and managing voice agents (without actual calling functionality until Twilio is configured).

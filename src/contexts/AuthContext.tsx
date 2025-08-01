@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState<boolean>(false);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -94,22 +95,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (redirectAfterLogin?: string) => {
     setLoading(true);
-    const redirectTo = window.location.origin;
-    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
+
+    // Store the redirect destination if provided
+    if (redirectAfterLogin) {
+      setRedirectTo(redirectAfterLogin);
+      // Store in sessionStorage as backup
+      sessionStorage.setItem('redirectAfterLogin', redirectAfterLogin);
+    }
+
+    const oauthRedirectUrl = window.location.origin;
+    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: oauthRedirectUrl } });
     setLoading(false);
   };
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    // Clear redirect destination on sign out
+    setRedirectTo(null);
+    sessionStorage.removeItem('redirectAfterLogin');
   };
 
   const completeOnboarding = () => {
     setIsNewUser(false);
   };
 
-
+  const getRedirectDestination = () => {
+    const destination = redirectTo || sessionStorage.getItem('redirectAfterLogin');
+    if (destination) {
+      // Clear the stored destination
+      setRedirectTo(null);
+      sessionStorage.removeItem('redirectAfterLogin');
+      return destination;
+    }
+    return null;
+  };
 
   // Debug logging
   console.log('[AuthContext] Current state:', {
@@ -117,11 +138,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loading,
     isNewUser,
     hasUser: !!user,
+    redirectTo,
     timestamp: new Date().toISOString()
   });
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, googleProfile: getGoogleProfile(user), isNewUser, setIsNewUser, completeOnboarding }}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      signInWithGoogle,
+      signOut,
+      googleProfile: getGoogleProfile(user),
+      isNewUser,
+      setIsNewUser,
+      completeOnboarding,
+      getRedirectDestination
+    }}>
       {children}
     </AuthContext.Provider>
   );

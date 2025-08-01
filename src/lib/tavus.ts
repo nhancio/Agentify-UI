@@ -58,9 +58,9 @@ export class TavusService {
   async testConnection() {
     try {
       if (!this.apiKey) {
-        return { 
-          success: false, 
-          message: 'Tavus API key not configured. Please add VITE_TAVUS_API_KEY to your environment variables.' 
+        return {
+          success: false,
+          message: 'Tavus API key not configured. Please add VITE_TAVUS_API_KEY to your environment variables.'
         };
       }
 
@@ -72,38 +72,38 @@ export class TavusService {
       // Debug: print status and headers
       console.debug('[TavusService] testConnection status:', response.status, response.statusText);
       console.debug('[TavusService] testConnection headers:', [...response.headers.entries()]);
-      
+
       if (!response.ok) {
         if (response.status === 401) {
-          return { 
-            success: false, 
-            message: 'Invalid Tavus API key. Please check your VITE_TAVUS_API_KEY.' 
+          return {
+            success: false,
+            message: 'Invalid Tavus API key. Please check your VITE_TAVUS_API_KEY.'
           };
         }
         if (response.status === 403) {
-          return { 
-            success: false, 
-            message: 'Tavus API access denied. Please check your account permissions.' 
+          return {
+            success: false,
+            message: 'Tavus API access denied. Please check your account permissions.'
           };
         }
-        return { 
-          success: false, 
-          message: `Tavus API error: ${response.status} ${response.statusText}` 
+        return {
+          success: false,
+          message: `Tavus API error: ${response.status} ${response.statusText}`
         };
       }
-      
+
       return { success: true, message: 'Tavus API connection successful' };
     } catch (error) {
       console.error('Tavus API test failed:', error);
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        return { 
-          success: false, 
-          message: 'Network error: Unable to connect to Tavus API. Please check your internet connection.' 
+        return {
+          success: false,
+          message: 'Network error: Unable to connect to Tavus API. Please check your internet connection.'
         };
       }
-      return { 
-        success: false, 
-        message: error instanceof Error ? error.message : 'Unknown connection error' 
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown connection error'
       };
     }
   }
@@ -551,22 +551,22 @@ export const videoAgentPersonas = {
     context: 'Hotel and hospitality services',
     category: 'Hospitality'
   },
-  sales_agent: {
+               sales_agent: {
     name: 'Sales Representative',
-    systemPrompt: `You are an enthusiastic and consultative sales representative. 
-    Focus on understanding customer needs first, then present solutions that genuinely 
+    systemPrompt: `You are an enthusiastic and consultative sales representative.
+    Focus on understanding customer needs first, then present solutions that genuinely
     help their business. Build trust through expertise and genuine interest.
-    
+
     Sales Process:
     1. Rapport building and discovery (2-3 minutes)
     2. Needs assessment and pain point identification (3-4 minutes)
     3. Solution presentation tailored to their needs (2-3 minutes)
     4. Objection handling and clarification (1-2 minutes)
     5. Next steps and follow-up scheduling (1 minute)
-    
-    Be consultative, not pushy. Focus on value creation.`,
+
+                   Be consultative, not pushy. Focus on value creation.`,
     context: 'Sales and lead generation',
-    category: 'Sales'
+    category: 'Voice Agents'
   },
   customer_support: {
     name: 'Customer Support Agent',

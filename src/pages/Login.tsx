@@ -13,10 +13,16 @@ const Login: React.FC = () => {
       if (isNewUser) {
         navigate('/onboarding');
       } else {
-        navigate('/dashboard', { replace: true });
+        // Let the PublicRoute component handle redirects for stored destinations
+        // Only handle URL state redirects here
+        const from = location.state?.from;
+        if (from) {
+          navigate(from, { replace: true });
+        }
+        // If no URL state redirect, let PublicRoute handle it
       }
     }
-  }, [user, isNewUser, navigate]);
+  }, [user, isNewUser, navigate, location]);
 
   // Remove email/password form and only show Google sign-in
 
@@ -37,7 +43,10 @@ const Login: React.FC = () => {
           <div className="flex flex-col items-center space-y-4">
             <button
               type="button"
-              onClick={signInWithGoogle}
+              onClick={() => {
+                const from = location.state?.from;
+                signInWithGoogle(from);
+              }}
               disabled={loading}
               className="w-full flex items-center justify-center bg-white border border-gray-300 rounded-lg px-4 py-3 font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >

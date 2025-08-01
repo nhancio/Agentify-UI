@@ -62,7 +62,7 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
       id: 'sales-agent',
       name: 'Alex - Sales Representative',
       description: 'Persuasive sales professional that qualifies leads and schedules demos with high conversion rates.',
-      category: 'Sales & Marketing',
+      category: 'Voice Agents',
       videoUrl: 'https://player.vimeo.com/video/891679646?autoplay=1&loop=1&muted=1',
       thumbnailUrl: 'https://images.pexels.com/photos/3760778/pexels-photo-3760778.jpeg?auto=compress&cs=tinysrgb&w=600',
       stats: {
@@ -105,16 +105,16 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
             <Play className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium">Live Video Agents in Action</span>
           </div>
-          
+
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
             Meet Your AI Video Team
             <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Ready to Work 24/7
             </span>
           </h2>
-          
+
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Watch our AI video agents in action. Each agent is powered by Tavus technology, 
+            Watch our AI video agents in action. Each agent is powered by Tavus technology,
             providing natural, face-to-face interactions that feel completely human.
           </p>
         </div>
@@ -122,8 +122,8 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
         {/* Video Agents Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {videoAgents.map((agent, index) => (
-            <div 
-              key={agent.id} 
+            <div
+              key={agent.id}
               className="group bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               style={{ animationDelay: `${index * 200}ms` }}
             >
@@ -138,29 +138,29 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
                     allowFullScreen
                   />
                 ) : (
-                  <div 
+                  <div
                     className="relative w-full h-full cursor-pointer group"
                     onClick={() => handleVideoPlay(agent.id)}
                   >
-                    <img 
-                      src={agent.thumbnailUrl} 
+                    <img
+                      src={agent.thumbnailUrl}
                       alt={agent.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       onError={e => {
                         (e.target as HTMLImageElement).src = '/default-avatar.png';
                       }}
                     />
-                    
+
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300" />
-                    
+
                     {/* Play Button */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-20 h-20 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-2xl">
                         <Play className="w-8 h-8 text-gray-800 ml-1" />
                       </div>
                     </div>
-                    
+
                     {/* Agent Info Overlay */}
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3">
@@ -238,7 +238,7 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">Conversations</div>
                   </div>
-                  
+
                   <div className="text-center">
                     <div className="flex items-center justify-center mb-1">
                       <Clock className="w-4 h-4 text-green-600 mr-1" />
@@ -248,7 +248,7 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">Avg Duration</div>
                   </div>
-                  
+
                   <div className="text-center">
                     <div className="flex items-center justify-center mb-1">
                       <Star className="w-4 h-4 text-yellow-500 mr-1" />
@@ -276,7 +276,7 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
 
                 {/* Action Buttons */}
                 <div className="flex space-x-3">
-                  <button 
+                  <button
                     onClick={() => handleVideoPlay(agent.id)}
                     className="flex-1 flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                   >
@@ -302,7 +302,7 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
               Experience the Future of Customer Interaction
             </h3>
             <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              These aren't pre-recorded videos. Each agent responds in real-time, 
+              These aren't pre-recorded videos. Each agent responds in real-time,
               understands context, and provides personalized interactions just like a human would.
             </p>
           </div>
@@ -345,7 +345,7 @@ const VideoAgentShowcase: React.FC<VideoAgentShowcaseProps> = ({ onTryNow }) => 
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">Ready to Build Your AI Video Team?</h3>
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              Create your own video agents in minutes. Upload a training video, 
+              Create your own video agents in minutes. Upload a training video,
               configure the personality, and deploy instantly.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

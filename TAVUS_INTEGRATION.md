@@ -71,7 +71,7 @@ window.open(conversation.streamUrl, '_blank');
 The integration includes ready-to-use personas:
 - **HR Interviewer**: Professional candidate screening
 - **Hotel Concierge**: Hospitality and booking assistance  
-- **Sales Agent**: Lead qualification and demos
+- **Sales Agent**: Lead qualification and demos (Voice Agent)
 - **Customer Support**: Help desk and issue resolution
 
 ### 7. Integration Points

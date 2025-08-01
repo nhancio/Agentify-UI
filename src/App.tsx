@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -22,7 +22,8 @@ import Onboarding from './pages/Onboarding';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, getRedirectDestination } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -36,7 +37,13 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
+
+  // Check for redirect destination after successful authentication
+  const redirectDestination = getRedirectDestination();
+  if (redirectDestination) {
+    return <Navigate to={redirectDestination} replace />;
   }
 
   return <>{children}</>;
@@ -44,7 +51,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 // Public Route Component (redirect if authenticated)
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, getRedirectDestination } = useAuth();
 
   if (loading) {
     return (
@@ -58,6 +65,11 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   if (user) {
+    // Check for redirect destination after successful authentication
+    const redirectDestination = getRedirectDestination();
+    if (redirectDestination) {
+      return <Navigate to={redirectDestination} replace />;
+    }
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -66,7 +78,8 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 // Protected Route with Onboarding Check
 const ProtectedRouteWithOnboarding: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading, isNewUser } = useAuth();
+  const { user, loading, isNewUser, getRedirectDestination } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -80,11 +93,17 @@ const ProtectedRouteWithOnboarding: React.FC<{ children: React.ReactNode }> = ({
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   if (isNewUser) {
     return <Navigate to="/onboarding" replace />;
+  }
+
+  // Check for redirect destination after successful authentication
+  const redirectDestination = getRedirectDestination();
+  if (redirectDestination) {
+    return <Navigate to={redirectDestination} replace />;
   }
 
   return <>{children}</>;

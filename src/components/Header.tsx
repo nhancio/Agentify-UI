@@ -95,7 +95,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               className='bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-medium'
               onClick={() => {
                 if (!user) {
-                  signInWithGoogle();
+                  signInWithGoogle('/dashboard');
                 } else {
                   navigate('/dashboard');
                 }
@@ -115,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               </button>
             ) : (
               <button
-                onClick={signInWithGoogle}
+                onClick={() => signInWithGoogle()}
                 className='ml-2 bg-white text-blue-600 border border-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-all duration-300'
               >
                 Sign In
