@@ -33,7 +33,7 @@ const EmailAgentDeployForm = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg relative">
         <button
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 px-2 font-bold text-2xl border-2 border-gray-200 rounded"
           onClick={onClose}
         >
           &times;
@@ -46,51 +46,53 @@ const EmailAgentDeployForm = ({
           }}
           className="space-y-4"
         >
-          <label className="block mb-1">
-            Gmail <span className="text-red-600">*</span>
-          </label>
-          <input
-            className="w-full border rounded p-2"
-            placeholder="Gmail"
-            value={form.gmail}
-            onChange={(e) => setForm((f) => ({ ...f, gmail: e.target.value }))}
-            required
-          />
-          <label className="block mb-1">
-            Client ID <span className="text-red-600">*</span>
-          </label>
-          <input
-            className="w-full border rounded p-2"
-            placeholder="Client ID"
-            value={form.clientId}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, clientId: e.target.value }))
-            }
-            required
-          />
-          <input
-            className="w-full border rounded p-2"
-            placeholder="Client Secret"
-            value={form.clientSecret}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, clientSecret: e.target.value }))
-            }
-          />
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <label className="w-1/4">
+              Gmail <span className="text-red-600">*</span>
+            </label>
             <input
-              className="flex-1 border rounded p-2"
+              className="w-full border rounded p-2"
+              placeholder="Gmail"
+              value={form.gmail}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, gmail: e.target.value }))
+              }
+              required
+            />
+          </div>
+          <div className="flex gap-2 items-center">
+            <label className="w-1/4">
+              Client ID <span className="text-red-600">*</span>
+            </label>
+            <input
+              className="w-full border rounded p-2"
+              placeholder="Client ID"
+              value={form.clientId}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, clientId: e.target.value }))
+              }
+              required
+            />
+          </div>
+          <div className="flex gap-2 items-center">
+            <label className="w-1/3">Client Secret</label>
+            <input
+              className="w-full border rounded p-2"
+              placeholder="Client Secret"
+              value={form.clientSecret}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, clientSecret: e.target.value }))
+              }
+            />
+          </div>
+          <div className="flex gap-2 items-center">
+            <label className="w-1/4">Emails List URL</label>
+            <input
+              className="flex-1 border rounded p-2 w-full"
               placeholder="Emails List URL"
               value={form.emailsListUrl}
               onChange={(e) =>
                 setForm((f) => ({ ...f, emailsListUrl: e.target.value }))
-              }
-            />
-            <input
-              className="flex-1 border rounded p-2"
-              placeholder="Field"
-              value={form.emailsField}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, emailsField: e.target.value }))
               }
             />
           </div>
@@ -105,6 +107,7 @@ const EmailAgentDeployForm = ({
                   emailsCsv: e.target.files?.[0] || null,
                 }))
               }
+              className="file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
           </div>
           <input
@@ -147,6 +150,12 @@ const EmailAgentDeployForm = ({
           >
             Submit
           </button>
+          <div className="flex justify-center">
+            <span className="font-extralight italic text-sm text-center text-gray-400">
+              Fields with <span className="text-red-400">(*)</span> are required
+              fields.
+            </span>
+          </div>
         </form>
       </div>
     </div>
