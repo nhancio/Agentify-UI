@@ -1,22 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import { Users, Star, Building2, Sparkles, Play } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import saveToAirtable from '../lib/airtable';
+import React, { useEffect, useState } from "react";
+import Sidebar from "../components/Sidebar";
+import { Users, Star, Building2, Sparkles, Play } from "lucide-react";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import saveToAirtable from "../lib/airtable";
 
-const EmailAgentDeployForm = ({ open, onClose, onSubmit }: { open: boolean, onClose: () => void, onSubmit: (data: any) => void }) => {
+const EmailAgentDeployForm = ({
+  open,
+  onClose,
+  onSubmit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: any) => void;
+}) => {
   const [form, setForm] = useState({
-    gmail: '',
-    clientId: '',
-    clientSecret: '',
-    emailsListUrl: '',
+    gmail: "",
+    clientId: "",
+    clientSecret: "",
+    emailsListUrl: "",
     emailsCsv: null as File | null,
-    emailsField: '',
-    subject: '',
-    body: '',
-    mode: 'custom', // or 'ai'
+    emailsField: "",
+    subject: "",
+    body: "",
+    mode: "custom", // or 'ai'
   });
 
   if (!open) return null;
@@ -24,65 +32,226 @@ const EmailAgentDeployForm = ({ open, onClose, onSubmit }: { open: boolean, onCl
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg relative">
-        <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={onClose}>&times;</button>
+        <button
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          onClick={onClose}
+        >
+          &times;
+        </button>
         <h2 className="text-xl font-bold mb-4">Deploy Email Agent</h2>
-        <form onSubmit={e => { e.preventDefault(); onSubmit(form); }} className="space-y-4">
-          <label className="block mb-1">Gmail <span className="text-red-600">*</span></label>
-          <input className="w-full border rounded p-2" placeholder="Gmail" value={form.gmail} onChange={e => setForm(f => ({ ...f, gmail: e.target.value }))} required />
-          <label className="block mb-1">Client ID <span className="text-red-600">*</span></label>
-          <input className="w-full border rounded p-2" placeholder="Client ID" value={form.clientId} onChange={e => setForm(f => ({ ...f, clientId: e.target.value }))} required />
-          <input className="w-full border rounded p-2" placeholder="Client Secret" value={form.clientSecret} onChange={e => setForm(f => ({ ...f, clientSecret: e.target.value }))} />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit(form);
+          }}
+          className="space-y-4"
+        >
+          <label className="block mb-1">
+            Gmail <span className="text-red-600">*</span>
+          </label>
+          <input
+            className="w-full border rounded p-2"
+            placeholder="Gmail"
+            value={form.gmail}
+            onChange={(e) => setForm((f) => ({ ...f, gmail: e.target.value }))}
+            required
+          />
+          <label className="block mb-1">
+            Client ID <span className="text-red-600">*</span>
+          </label>
+          <input
+            className="w-full border rounded p-2"
+            placeholder="Client ID"
+            value={form.clientId}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, clientId: e.target.value }))
+            }
+            required
+          />
+          <input
+            className="w-full border rounded p-2"
+            placeholder="Client Secret"
+            value={form.clientSecret}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, clientSecret: e.target.value }))
+            }
+          />
           <div className="flex gap-2">
-            <input className="flex-1 border rounded p-2" placeholder="Emails List URL" value={form.emailsListUrl} onChange={e => setForm(f => ({ ...f, emailsListUrl: e.target.value }))} />
-            <input className="flex-1 border rounded p-2" placeholder="Field" value={form.emailsField} onChange={e => setForm(f => ({ ...f, emailsField: e.target.value }))} />
+            <input
+              className="flex-1 border rounded p-2"
+              placeholder="Emails List URL"
+              value={form.emailsListUrl}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, emailsListUrl: e.target.value }))
+              }
+            />
+            <input
+              className="flex-1 border rounded p-2"
+              placeholder="Field"
+              value={form.emailsField}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, emailsField: e.target.value }))
+              }
+            />
           </div>
           <div>
             <label className="block mb-1">Upload CSV</label>
-            <input type="file" accept=".csv" onChange={e => setForm(f => ({ ...f, emailsCsv: e.target.files?.[0] || null }))} />
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  emailsCsv: e.target.files?.[0] || null,
+                }))
+              }
+            />
           </div>
-          <input className="w-full border rounded p-2" placeholder="Subject" value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} />
-          <textarea className="w-full border rounded p-2" placeholder="Body" value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} />
+          <input
+            className="w-full border rounded p-2"
+            placeholder="Subject"
+            value={form.subject}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, subject: e.target.value }))
+            }
+          />
+          <textarea
+            className="w-full border rounded p-2"
+            placeholder="Body"
+            value={form.body}
+            onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
+          />
           <div className="flex gap-2">
-            <button type="button" className={`flex-1 border rounded p-2 ${form.mode === 'custom' ? 'bg-blue-100' : ''}`} onClick={() => setForm(f => ({ ...f, mode: 'custom' }))}>Custom</button>
-            <button type="button" className={`flex-1 border rounded p-2 ${form.mode === 'ai' ? 'bg-blue-100' : ''}`} onClick={() => setForm(f => ({ ...f, mode: 'ai' }))}>Create with AI</button>
+            <button
+              type="button"
+              className={`flex-1 border rounded p-2 ${
+                form.mode === "custom" ? "bg-blue-100" : ""
+              }`}
+              onClick={() => setForm((f) => ({ ...f, mode: "custom" }))}
+            >
+              Custom
+            </button>
+            <button
+              type="button"
+              className={`flex-1 border rounded p-2 ${
+                form.mode === "ai" ? "bg-blue-100" : ""
+              }`}
+              onClick={() => setForm((f) => ({ ...f, mode: "ai" }))}
+            >
+              Create with AI
+            </button>
           </div>
-          <button type="submit" className="w-full bg-blue-600 text-white rounded p-2 font-semibold">Submit</button>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white rounded p-2 font-semibold"
+          >
+            Submit
+          </button>
         </form>
       </div>
     </div>
   );
 };
 
-const BloggerAgentDeployForm = ({ open, onClose, onSubmit }: { open: boolean, onClose: () => void, onSubmit: (data: any) => void }) => {
+const BloggerAgentDeployForm = ({
+  open,
+  onClose,
+  onSubmit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: any) => void;
+}) => {
   const [form, setForm] = useState({
-    email: '',
-    wpUsername: '',
-    wpUrl: '',
-    wpAppPassword: '',
-    schedule: 'daily',
+    email: "",
+    wpUsername: "",
+    wpUrl: "",
+    wpAppPassword: "",
+    schedule: "daily",
   });
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg relative">
-        <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={onClose}>&times;</button>
+        <button
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          onClick={onClose}
+        >
+          &times;
+        </button>
         <h2 className="text-xl font-bold mb-4">Deploy Blogger Agent</h2>
-        <form onSubmit={e => { e.preventDefault(); onSubmit(form); }} className="space-y-4">
-          <label className="block mb-1">Email <span className="text-red-600">*</span></label>
-          <input className="w-full border rounded p-2" placeholder="Email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
-          <label className="block mb-1">Username <span className="text-red-600">*</span></label>
-          <input className="w-full border rounded p-2" placeholder="Username" value={form.wpUsername} onChange={e => setForm(f => ({ ...f, wpUsername: e.target.value }))} required />
-          <label className="block mb-1">URL <span className="text-red-600">*</span></label>
-          <input className="w-full border rounded p-2" placeholder="URL" value={form.wpUrl} onChange={e => setForm(f => ({ ...f, wpUrl: e.target.value }))} required />
-          <label className="block mb-1">Password <span className="text-red-600">*</span></label>
-          <input className="w-full border rounded p-2" placeholder="Password" value={form.wpAppPassword} onChange={e => setForm(f => ({ ...f, wpAppPassword: e.target.value }))} required />
-          <label className="block mb-1">Schedule <span className="text-red-600">*</span></label>
-          <select className="w-full border rounded p-2" value={form.schedule} onChange={e => setForm(f => ({ ...f, schedule: e.target.value }))} required>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit(form);
+          }}
+          className="space-y-4"
+        >
+          <label className="block mb-1">
+            Email <span className="text-red-600">*</span>
+          </label>
+          <input
+            className="w-full border rounded p-2"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+            required
+          />
+          <label className="block mb-1">
+            Username <span className="text-red-600">*</span>
+          </label>
+          <input
+            className="w-full border rounded p-2"
+            placeholder="Username"
+            value={form.wpUsername}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, wpUsername: e.target.value }))
+            }
+            required
+          />
+          <label className="block mb-1">
+            URL <span className="text-red-600">*</span>
+          </label>
+          <input
+            className="w-full border rounded p-2"
+            placeholder="URL"
+            value={form.wpUrl}
+            onChange={(e) => setForm((f) => ({ ...f, wpUrl: e.target.value }))}
+            required
+          />
+          <label className="block mb-1">
+            Password <span className="text-red-600">*</span>
+          </label>
+          <input
+            className="w-full border rounded p-2"
+            placeholder="Password"
+            value={form.wpAppPassword}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, wpAppPassword: e.target.value }))
+            }
+            required
+          />
+          <label className="block mb-1">
+            Schedule <span className="text-red-600">*</span>
+          </label>
+          <select
+            className="w-full border rounded p-2"
+            value={form.schedule}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, schedule: e.target.value }))
+            }
+            required
+          >
             <option value="hourly">Hourly</option>
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
           </select>
-          <button type="submit" className="w-full bg-blue-600 text-white rounded p-2 font-semibold">Submit</button>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white rounded p-2 font-semibold"
+          >
+            Submit
+          </button>
         </form>
       </div>
     </div>
@@ -93,7 +262,9 @@ const Marketplace: React.FC = () => {
   const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'nhancio' | 'partner' | 'all'>('nhancio');
+  const [activeTab, setActiveTab] = useState<"nhancio" | "partner" | "all">(
+    "all",
+  );
   const [deployingAgent, setDeployingAgent] = useState<string | null>(null);
   const [userCredits, setUserCredits] = useState<number>(0);
   const [showEmailForm, setShowEmailForm] = useState(false);
@@ -109,19 +280,19 @@ const Marketplace: React.FC = () => {
       if (!user) return;
 
       const { data, error } = await supabase
-        .from('users')
-        .select('credits')
-        .eq('id', user.id)
+        .from("users")
+        .select("credits")
+        .eq("id", user.id)
         .single();
 
       if (error) {
-        console.error('Error fetching user credits:', error);
+        console.error("Error fetching user credits:", error);
         return;
       }
 
       setUserCredits(data.credits || 0);
     } catch (err) {
-      console.error('Error fetching user credits:', err);
+      console.error("Error fetching user credits:", err);
     }
   };
 
@@ -132,13 +303,13 @@ const Marketplace: React.FC = () => {
       setError(null);
       try {
         const { data, error } = await supabase
-          .from('agents')
-          .select('*')
+          .from("agents")
+          .select("*")
           .limit(100);
         if (error) throw error;
         setAgents(data || []);
       } catch (err: any) {
-        setError(err.message || 'Failed to fetch agents');
+        setError(err.message || "Failed to fetch agents");
         setAgents([]);
       } finally {
         setLoading(false);
@@ -149,47 +320,49 @@ const Marketplace: React.FC = () => {
   }, [user]);
 
   const getCurrentAgents = () => {
-    if (activeTab === 'all') return agents;
+    if (activeTab === "all") return agents;
 
     // Custom filtering for specific tabs
-    if (activeTab === 'nhancio') {
+    if (activeTab === "nhancio") {
       // Show social media agents in nhancio/automations tab
-      const filtered = agents.filter(agent =>
-        agent.category === 'nhancio' ||
-        agent["Name"]?.toLowerCase().includes('social media') ||
-        agent.type === 'social_media'
+      const filtered = agents.filter(
+        (agent) =>
+          agent.category === "nhancio" ||
+          agent["Name"]?.toLowerCase().includes("social media") ||
+          agent.type === "social_media",
       );
-      console.log('nhancio agents:', filtered);
+      console.log("nhancio agents:", filtered);
       return filtered;
     }
 
-    if (activeTab === 'partner') {
+    if (activeTab === "partner") {
       // Show sales agents in partner tab (Voice Agents)
-      const filtered = agents.filter(agent =>
-        agent.category === 'partner' ||
-        agent.category === 'Voice Agents' ||
-        agent["Name"]?.toLowerCase().includes('sales') ||
-        agent.type === 'voice'
+      const filtered = agents.filter(
+        (agent) =>
+          agent.category === "partner" ||
+          agent.category === "Voice Agents" ||
+          agent["Name"]?.toLowerCase().includes("sales") ||
+          agent.type === "voice",
       );
-      console.log('partner agents:', filtered);
+      console.log("partner agents:", filtered);
       return filtered;
     }
 
-    return agents.filter(agent => agent.category === activeTab);
+    return agents.filter((agent) => agent.category === activeTab);
   };
 
   const handleDeployAgent = async (agent: any) => {
     if (!user) {
       // Trigger Google sign-in for non-logged-in users with redirect back to marketplace
-      signInWithGoogle('/marketplace');
+      signInWithGoogle("/marketplace");
       return;
     }
-    if (agent.type === 'email') {
+    if (agent.type === "email") {
       setEmailAgent(agent);
       setShowEmailForm(true);
       return;
     }
-    if (agent.type === 'blog') {
+    if (agent.type === "blog") {
       setBloggerAgent(agent);
       setShowBloggerForm(true);
       return;
@@ -202,10 +375,12 @@ const Marketplace: React.FC = () => {
       const agentCost = agent.credits || 0;
       if (userCredits < agentCost) {
         // Show alert message
-        alert(`Insufficient credits! You need ${agentCost} credits to deploy "${agent.Name}", but you only have ${userCredits} credits. Redirecting to profile page to add more credits.`);
+        alert(
+          `Insufficient credits! You need ${agentCost} credits to deploy "${agent.Name}", but you only have ${userCredits} credits. Redirecting to profile page to add more credits.`,
+        );
 
         // Redirect to profile page to add more credits
-        navigate('/profile');
+        navigate("/profile");
         return;
       }
 
@@ -215,12 +390,12 @@ const Marketplace: React.FC = () => {
 
       // Deduct credits from user account
       const { error } = await supabase
-        .from('users')
+        .from("users")
         .update({ credits: userCredits - agentCost })
-        .eq('id', user.id);
+        .eq("id", user.id);
 
       if (error) {
-        console.error('Error updating credits:', error);
+        console.error("Error updating credits:", error);
       } else {
         // Refresh user credits
         fetchUserCredits();
@@ -228,10 +403,9 @@ const Marketplace: React.FC = () => {
 
       // You could also redirect to the agent builder or dashboard
       // navigate('/voice-agents');
-
     } catch (error) {
-      console.error('Deployment failed:', error);
-      alert('Failed to deploy agent. Please try again.');
+      console.error("Deployment failed:", error);
+      alert("Failed to deploy agent. Please try again.");
     } finally {
       setDeployingAgent(null);
     }
@@ -243,7 +417,11 @@ const Marketplace: React.FC = () => {
         {/* Image */}
         <div className="flex items-center justify-between mb-4">
           {agent.image ? (
-            <img src={agent.image} alt={agent["Name"]} className="w-16 h-16 object-cover rounded-full" />
+            <img
+              src={agent.image}
+              alt={agent["Name"]}
+              className="w-16 h-16 object-cover rounded-full"
+            />
           ) : (
             <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-100">
               <Users className="h-8 w-8 text-gray-400" />
@@ -252,7 +430,9 @@ const Marketplace: React.FC = () => {
         </div>
 
         {/* Name */}
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{agent["Name"]}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          {agent["Name"]}
+        </h3>
 
         {/* Description */}
         <p className="text-sm text-gray-600 mb-3 line-clamp-3">
@@ -261,8 +441,12 @@ const Marketplace: React.FC = () => {
 
         {/* Credits and Subscribers */}
         <div className="flex items-center justify-between mb-3">
-          <span className="text-blue-700 font-medium">{agent.credits ?? '--'} credits/run</span>
-          <span className="text-gray-500 text-sm">{agent["no.of_subscribers"] ?? 0} subscribers</span>
+          <span className="text-blue-700 font-medium">
+            {agent.credits ?? "--"} credits/run
+          </span>
+          <span className="text-gray-500 text-sm">
+            {agent["no.of_subscribers"] ?? 0} subscribers
+          </span>
         </div>
 
         {/* User Credits Display */}
@@ -270,7 +454,13 @@ const Marketplace: React.FC = () => {
           <div className="mb-3 p-2 bg-gray-50 rounded-lg">
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">Your Credits:</span>
-              <span className={`font-semibold ${userCredits >= (agent.credits || 0) ? 'text-green-600' : 'text-red-600'}`}>
+              <span
+                className={`font-semibold ${
+                  userCredits >= (agent.credits || 0)
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
                 {userCredits}
               </span>
             </div>
@@ -295,7 +485,9 @@ const Marketplace: React.FC = () => {
         <button
           onClick={() => handleDeployAgent(agent)}
           disabled={deployingAgent === agent.id}
-          className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-blue-600 hover:bg-blue-700 text-white ${deployingAgent === agent.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-blue-600 hover:bg-blue-700 text-white ${
+            deployingAgent === agent.id ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           {deployingAgent === agent.id ? (
             <>
@@ -323,60 +515,66 @@ const Marketplace: React.FC = () => {
           setShowEmailForm(false);
           if (!user || !emailAgent) return;
           // Debug log
-          console.log('Upserting user_app_config:', {
+          console.log("Upserting user_app_config:", {
             user_id: user.id,
             agent_id: emailAgent.id,
             agent_id_type: typeof emailAgent.id,
             agent_id_number: Number(emailAgent.id),
-            agent_id_number_type: typeof Number(emailAgent.id)
+            agent_id_number_type: typeof Number(emailAgent.id),
           });
-          console.log('Form data:', data);
-          const { error } = await supabase.from('user_app_config').upsert([
-            {
-              user_id: user.id,
-              agent_id: Number(emailAgent.id), // ensure this is bigint
-              config: data
-            }
-          ], { onConflict: 'user_id,agent_id' });
+          console.log("Form data:", data);
+          const { error } = await supabase.from("user_app_config").upsert(
+            [
+              {
+                user_id: user.id,
+                agent_id: Number(emailAgent.id), // ensure this is bigint
+                config: data,
+              },
+            ],
+            { onConflict: "user_id,agent_id" },
+          );
           // Save to Airtable (all relevant fields, exact column names)
           const airtablePayload = {
             user_id: user.id,
             agent_id: Number(emailAgent.id),
-            'Gmail': data.gmail,
-            'Client ID': data.clientId,
-            'Client Secret': data.clientSecret,
-            'Emails List URL': data.emailsListUrl, // corrected field name
-            'Field': data.emailsField,
-            'Subject': data.subject,
-            'Body': data.body,
-            'Mode': data.mode
+            Gmail: data.gmail,
+            "Client ID": data.clientId,
+            "Client Secret": data.clientSecret,
+            "Emails List URL": data.emailsListUrl, // corrected field name
+            Field: data.emailsField,
+            Subject: data.subject,
+            Body: data.body,
+            Mode: data.mode,
           };
-          console.log('Airtable payload:', airtablePayload);
+          console.log("Airtable payload:", airtablePayload);
           saveToAirtable(airtablePayload).catch((err) => {
-            console.error('Airtable save error:', err, JSON.stringify(err));
+            console.error("Airtable save error:", err, JSON.stringify(err));
           });
           if (error) {
-            console.error('Upsert error:', error);
-            alert('Failed to save config: ' + error.message);
+            console.error("Upsert error:", error);
+            alert("Failed to save config: " + error.message);
             return;
           }
           // Deduct credits and subscribe only after config is saved
           const agentCost = emailAgent.credits || 0;
-          const { error: creditError } = await supabase.from('users')
+          const { error: creditError } = await supabase
+            .from("users")
             .update({ credits: userCredits - agentCost })
-            .eq('id', user.id);
+            .eq("id", user.id);
           if (creditError) {
-            console.error('Credit deduction error:', creditError);
-            alert('Failed to deduct credits: ' + creditError.message);
+            console.error("Credit deduction error:", creditError);
+            alert("Failed to deduct credits: " + creditError.message);
           } else {
             fetchUserCredits();
           }
-          const { error: subError } = await supabase.from('user_agent_subscriptions').insert({
-            user_id: user.id,
-            agent_id: emailAgent.id
-          });
+          const { error: subError } = await supabase
+            .from("user_agent_subscriptions")
+            .insert({
+              user_id: user.id,
+              agent_id: emailAgent.id,
+            });
           if (subError) {
-            console.error('Subscription error:', subError);
+            console.error("Subscription error:", subError);
             // Not fatal, so don't block
           }
         }}
@@ -388,57 +586,63 @@ const Marketplace: React.FC = () => {
           setShowBloggerForm(false);
           if (!user || !bloggerAgent) return;
           // Debug log
-          console.log('Upserting user_app_config:', {
+          console.log("Upserting user_app_config:", {
             user_id: user.id,
             agent_id: bloggerAgent.id,
             agent_id_type: typeof bloggerAgent.id,
             agent_id_number: Number(bloggerAgent.id),
-            agent_id_number_type: typeof Number(bloggerAgent.id)
+            agent_id_number_type: typeof Number(bloggerAgent.id),
           });
-          console.log('Blogger form data at submit:', data);
-          const { error } = await supabase.from('user_app_config').upsert([
-            {
-              user_id: user.id,
-              agent_id: Number(bloggerAgent.id), // ensure this is bigint
-              config: data
-            }
-          ], { onConflict: 'user_id,agent_id' });
+          console.log("Blogger form data at submit:", data);
+          const { error } = await supabase.from("user_app_config").upsert(
+            [
+              {
+                user_id: user.id,
+                agent_id: Number(bloggerAgent.id), // ensure this is bigint
+                config: data,
+              },
+            ],
+            { onConflict: "user_id,agent_id" },
+          );
           // Save to Airtable (all relevant fields, exact column names)
           const airtablePayload = {
             user_id: user.id,
             agent_id: Number(bloggerAgent.id),
-            'Email': data.email,
-            'Username': data.wpUsername,
-            'URL': data.wpUrl,
-            'Password': data.wpAppPassword,
-            'Schedule': data.schedule
+            Email: data.email,
+            Username: data.wpUsername,
+            URL: data.wpUrl,
+            Password: data.wpAppPassword,
+            Schedule: data.schedule,
           };
-          console.log('Airtable payload:', airtablePayload);
+          console.log("Airtable payload:", airtablePayload);
           saveToAirtable(airtablePayload).catch((err) => {
-            console.error('Airtable save error:', err);
+            console.error("Airtable save error:", err);
           });
           if (error) {
-            console.error('Upsert error:', error);
-            alert('Failed to save config: ' + error.message);
+            console.error("Upsert error:", error);
+            alert("Failed to save config: " + error.message);
             return;
           }
           // Deduct credits and subscribe only after config is saved
           const agentCost = bloggerAgent.credits || 0;
-          const { error: creditError } = await supabase.from('users')
+          const { error: creditError } = await supabase
+            .from("users")
             .update({ credits: userCredits - agentCost })
-            .eq('id', user.id);
+            .eq("id", user.id);
           if (creditError) {
-            console.error('Credit deduction error:', creditError);
-            alert('Failed to deduct credits: ' + creditError.message);
+            console.error("Credit deduction error:", creditError);
+            alert("Failed to deduct credits: " + creditError.message);
           } else {
             fetchUserCredits();
           }
-          const { error: subError } = await supabase.from('user_agent_subscriptions').insert({
-            user_id: user.id,
-            agent_id: bloggerAgent.id
-          });
+          const { error: subError } = await supabase
+            .from("user_agent_subscriptions")
+            .insert({
+              user_id: user.id,
+              agent_id: bloggerAgent.id,
+            });
           if (subError) {
-            console.error('Subscription error:', subError);
+            console.error("Subscription error:", subError);
             // Not fatal, so don't block
           }
         }}
@@ -448,8 +652,12 @@ const Marketplace: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Agent Marketplace</h1>
-              <p className="text-sm sm:text-base text-gray-600">Discover and deploy pre-built AI agents for your business needs.</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                Agent Marketplace
+              </h1>
+              <p className="text-sm sm:text-base text-gray-600">
+                Discover and deploy pre-built AI agents for your business needs.
+              </p>
             </div>
           </div>
         </div>
@@ -458,31 +666,34 @@ const Marketplace: React.FC = () => {
         <div className="mb-6">
           <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
             <button
-              onClick={() => setActiveTab('nhancio')}
-              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'nhancio'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-                }`}
+              onClick={() => setActiveTab("all")}
+              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                activeTab === "all"
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              All Agents
+            </button>
+            <button
+              onClick={() => setActiveTab("nhancio")}
+              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                activeTab === "nhancio"
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
             >
               Automations
             </button>
             <button
-              onClick={() => setActiveTab('partner')}
-              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'partner'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-                }`}
+              onClick={() => setActiveTab("partner")}
+              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                activeTab === "partner"
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
             >
               Voice Agents
-            </button>
-            <button
-              onClick={() => setActiveTab('all')}
-              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'all'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-                }`}
-            >
-              All Agents
             </button>
           </div>
         </div>
