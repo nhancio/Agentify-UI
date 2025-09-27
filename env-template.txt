@@ -1,0 +1,42 @@
+# Supabase Configuration
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+
+# Payment Provider Configuration
+# Options: 'razorpay' or 'stripe'
+VITE_PAYMENT_PROVIDER=stripe
+
+# Razorpay Configuration (Frontend)
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
+
+# Backend Razorpay Keys (for Supabase Edge Functions)
+# Set these via: supabase secrets set RAZORPAY_KEY_ID=... RAZORPAY_KEY_SECRET=...
+
+# Stripe Configuration (Backend - Set as Supabase secrets)
+# Required secrets to set:
+# supabase secrets set STRIPE_SECRET_KEY=sk_live_...
+# supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...
+# supabase secrets set STRIPE_SUCCESS_URL=https://yourapp.com/success
+# supabase secrets set STRIPE_CANCEL_URL=https://yourapp.com/billing
+# supabase secrets set STRIPE_PRICE_ID_STARTER=price_...
+# supabase secrets set STRIPE_PRICE_ID_PROFESSIONAL=price_...
+# supabase secrets set STRIPE_PRICE_ID_ENTERPRISE=price_...
+
+
+# Supabase Service Keys
+# supabase secrets set SUPABASE_URL=https://your-project.supabase.co
+# supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# AI Image Generation APIs (Backend - Set as Supabase secrets)
+# supabase secrets set OPENAI_API_KEY=sk-...
+# supabase secrets set GOOGLE_IMAGEN_API_KEY=...
+# supabase secrets set QWEN_API_KEY=...
+# supabase secrets set GEMINI_API_KEY=your_gemini_api_key_here
+
+# Gemini AI Configuration (Frontend)
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+
+# Wavespeed API (Backend - Set as Supabase secret)
+# supabase secrets set WAVESPEED_API_KEY=your_wavespeed_api_key
+
+# Copy this file to .env and fill in your actual values
